@@ -1,0 +1,4 @@
+<% @maps.each do |map| %>
+  <a href="/maps/<%= map.id %>"><%= map.name %></a>
+<% end %>
+<a href="/maps/new">new map</a>

@@ -1,0 +1,6 @@
+development:
+  clients:
+    default:
+      database: simple_maps
+      hosts:
+        - localhost:27017

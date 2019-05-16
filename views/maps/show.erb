@@ -1,0 +1,138 @@
+<h1 style="position:absolute; top: 0; left: 0; text-shadow: 4px 3px 0 #FFFFFF, 2px 2px 2px rgba(206,89,55,0);">
+  <%= @map.name %>
+</h1>
+
+<img onload="dropPins()" class="img" src="<%= @url %>"></img>
+
+<script type="text/javascript" src="/javascripts/guid.js"></script>
+<script>
+  let img = document.querySelector('.img');
+
+  function drawPin(event, guid, pin) {
+
+    let xPercent = event.offsetX / img.width;
+    let yPercent = event.offsetY / img.height;
+
+    // xPercent and yPercent are the exact pin location but 
+    // those spots must be massaged to accomdate the height and width
+    // of the pin graphic
+    let left = (img.width * xPercent - 27) + "px";
+    let top = (img.height * yPercent - 35) + "px"
+
+    if (pin) {
+      pin.style.left = left;
+      pin.style.top = top;
+    } else {
+      let pin = document.querySelector('.pin.template').cloneNode(true);
+
+      pin.classList.remove("template");
+      pin.id = 'pin_' + guid; 
+      pin.style.left = left;
+      pin.style.top = top;
+      pin.style.display = "block";
+
+      let words = pin.querySelector('.words');
+      words.textContent = guid;
+      words.innerHTML = guid.replace(/-/g, "&#8209;");
+
+      document.body.appendChild(pin);
+
+      pin.style.width = words.clientWidth + "px";
+    }
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '/maps/<%= @map.id %>/pins', true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function() { // Call a function when the state changes.
+      if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+        console.dir(this.response);
+      }
+    }
+
+    xhr.send("name=" + name + "&guid=" + guid + "&x=" + xPercent + "&y= " + yPercent);
+  }
+
+  function dropPins() {
+    let pin;
+    let x;
+    let y;
+    let words;
+
+    <% @map.pins.each do |pin| %>
+
+    // xPercent and yPercent are the exact pin location but 
+    // those spots must be massaged to accomdate the height and width
+    // of the pin graphic
+    x = img.width * <%= pin.x %> - 27;
+    y = img.height * <%= pin.y %> - 35;
+
+    pin = document.querySelector(".pin.template").cloneNode(true);
+
+    words = pin.querySelector(".words");
+
+    // "hyphen" in a span is a line-breaking character
+    // what other characters break lines?
+    words.innerHTML = "<%= pin.guid %>".replace(/-/g, "&#8209;");
+
+    pin.id = 'pin_<%= pin.guid %>'; 
+    pin.style.left = x + "px";
+    pin.style.top = y + "px";
+    pin.classList.remove("template");
+    pin.display = "block";
+
+    document.body.appendChild(pin);
+
+    // must get width after appending to the document
+    pin.style.width = words.clientWidth + "px";
+    <% end %>
+  }
+
+  function initializeMapStorage() {
+    localStorage.setItem('simpleMaps', JSON.stringify({}));
+    return {};
+  }
+
+  img.addEventListener('click', (event) => {
+    let maps = JSON.parse(localStorage.getItem('simpleMaps'));
+
+    console.dir(maps);
+
+    if (!maps) {
+      maps = initializeMapStorage();
+    }
+
+    console.dir(maps);
+
+    let map = maps["<%= @map.id %>"];
+
+    if (!map) {
+      let guid = Guid.newGuid();
+
+      map = {
+        key: guid,
+        name: guid
+      };
+
+      console.log(map);
+
+      maps["<%= @map.id %>"] = map;
+
+      localStorage.setItem('simpleMaps', JSON.stringify(maps));
+    }
+    
+    let currentPin = document.querySelector('#pin_' + map.key);
+
+    drawPin(event, map.key, currentPin);
+  });
+</script>
+
+<div class="pin template">
+  <div class="inner-rectangle">
+    <span class="words">asdfasfdasdfasdf</span>
+  </div>
+  <div class="outer-triangle">
+  </div>
+  <div class="inner-triangle">
+  </div>
+</div>
