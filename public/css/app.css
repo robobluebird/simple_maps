@@ -40,6 +40,17 @@ html, body {
   display: inline-block;
 }
 
+.pin .inner-rectangle input {
+  height: 100%;
+  width: 100%;
+  font-size: 12px;
+  display: block;
+}
+
+.pin .inner-rectangle input.inactive {
+  display: none;
+}
+
 .pin .outer-triangle {
   position: absolute;
   left: 15px;
