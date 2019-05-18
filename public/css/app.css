@@ -1,5 +1,14 @@
 html, body {
   height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+h1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-shadow: 4px 3px 0 #FFFFFF, 2px 2px 2px rgba(206,89,55,0);
 }
 
 .map {
@@ -13,11 +22,22 @@ html, body {
 .img {
   height: 100%;
   cursor: pointer;
+  width: auto;
+}
+
+.img.wide {
+  width: 100%;
+  height: auto;
+}
+
+.img.tall {
+  height: 100%;
+  width: auto;
 }
 
 .pin {
   width: 50px;
-  height: 20px;
+  height: 24px;
   position: absolute;
   background-color: black;
   padding: 2px;
@@ -34,10 +54,12 @@ html, body {
   height: 100%;
   background-color: white;
   border-radius: 3px;
+  text-align: center;
 }
 
 .pin .inner-rectangle .words {
   display: inline-block;
+  margin: auto;
 }
 
 .pin .inner-rectangle input {
@@ -54,7 +76,7 @@ html, body {
 .pin .outer-triangle {
   position: absolute;
   left: 15px;
-  top: 22px;
+  top: 26px;
   width: 0;
   height: 0;
   border-left: 12px solid transparent;
@@ -65,7 +87,7 @@ html, body {
 .pin .inner-triangle {
   position: absolute;
   left: 17px;
-  top: 21px;
+  top: 25px;
   width: 0;
   height: 0;
   border-left: 10px solid transparent;
