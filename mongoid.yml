@@ -4,3 +4,9 @@ development:
       database: simple_maps
       hosts:
         - localhost:27017
+production:
+  clients:
+    default:
+      database: simple_maps
+      hosts:
+        - <%= ENV["MONGODB_URI"] %>
