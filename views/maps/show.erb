@@ -1,13 +1,16 @@
 <script>
   let map;
   let img;
+  let bag;
 </script>
 
 <h1>
   <%= @map.name %>
 </h1>
 
-<img class="img" src="<%= @url %>"></img>
+<div class="img">
+  <img id="img" src="<%= @url %>"></img>
+</div>
 
 <div class="pin template">
   <div class="inner-rectangle">
@@ -23,17 +26,12 @@
 <script type="text/javascript" src="/javascripts/guid.js"></script>
 <script>
   function fit() {
-    let pos = img.getBoundingClientRect();
+    let bagPos = bag.getBoundingClientRect();
 
-    console.log(window.innerWidth);
-    console.log(window.innerHeight);
-
-    if (window.innerWidth > window.innerHeight) {
-      console.log("one");
+    if (bagPos.width > bagPos.height) {
       img.classList.remove('tall');
       img.classList.add('wide');
     } else {
-      console.log("two");
       img.classList.remove('wide');
       img.classList.add('tall');
     }
@@ -45,7 +43,8 @@
     map = JSON.parse('<%= @map.to_json %>');
     map.id = map["_id"]["$oid"];
 
-    img = document.querySelector('.img');
+    bag = document.querySelector(".img")
+    img = document.querySelector("#img");
 
     fit();
 
@@ -73,23 +72,30 @@
         localStorage.setItem('simpleMaps', JSON.stringify(maps));
       }
 
-      let currentPin = document.querySelector('#pin_' + sMap.key);
-
       console.log(sMap);
+
+      let currentPin = document.querySelector('#pin_' + sMap.key);
 
       drawPin(event, sMap.key, sMap.name, currentPin);
     });
   };
 
   function drawPin(event, guid, name, pin) {
+    console.log(event);
     let xPercent = event.offsetX / img.width;
     let yPercent = event.offsetY / img.height;
+
+    console.log(event.offsetX);
+    console.log(event.offsetY);
 
     // 27 and 35 are offsets for the origin of the box vs the
     // "correct" position
     let pos = img.getBoundingClientRect();
-    let left = (pos.x + (img.width * xPercent) - 27) + "px";
-    let top = (pos.y + (img.height * yPercent) - 35) + "px";
+    let left = ((pos.x + window.scrollX) + (img.width * xPercent) - 27) + "px";
+    let top = ((pos.y + window.scrollY) + (img.height * yPercent) - 35) + "px";
+
+    console.log(left);
+    console.log(top);
 
     if (pin) {
       pin.style.left = left;
@@ -121,9 +127,9 @@
 
       if (name) {
         console.log('rep');
-        words.appendChild(document.createTextNode(pin.name));
-        document.body.appendChild(pin);
-        pin.style.width = words.clientWidth + "px";
+        words.appendChild(document.createTextNode(name));
+        bag.appendChild(pin);
+        pin.style.width = words.clientWidth + 10 + "px";
 
         var xhr = new XMLHttpRequest();
         xhr.open("POST", '/maps/' + map.id + '/pins', true);
@@ -153,7 +159,7 @@
                   input.classList.add("inactive");
                   words.style.display = "block";
                   words.appendChild(document.createTextNode(name));
-                  pin.style.width = words.clientWidth + "px";
+                  pin.style.width = words.clientWidth + 10 + "px";
                 }
               }
               xhr.send("name=" + name + "&guid=" + guid + "&x=" + xPercent + "&y= " + yPercent);
@@ -165,7 +171,7 @@
         words.style.display = "none";
         input.classList.remove("inactive");
         pin.style.width = "100px";
-        document.body.appendChild(pin);
+        bag.appendChild(pin);
       }
     }
   }
@@ -192,9 +198,7 @@
 
     pins.forEach(function (pin) { pin.remove() });
 
-    items = map.pins;
-
-    items.forEach(function (item) {
+    map.pins.forEach(function (item) {
       pos = img.getBoundingClientRect();
       left = (pos.x + (img.width * item.x) - 27) + "px";
       top = (pos.y + (img.height * item.y) - 35) + "px";
@@ -214,7 +218,7 @@
       pin.style.top = top;
       pin.classList.remove("template");
 
-      document.body.appendChild(pin);
+      bag.appendChild(pin);
 
       // must get width after appending to the document
       pin.style.width = words.clientWidth + 10 + "px";
