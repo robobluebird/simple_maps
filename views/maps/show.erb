@@ -28,9 +28,13 @@
     if (bagPos.width > bagPos.height) {
       img.classList.remove('tall');
       img.classList.add('wide');
+      bag.classList.remove('no-vert-scroll');
+      bag.classList.add('no-horz-scroll');
     } else {
       img.classList.remove('wide');
       img.classList.add('tall');
+      bag.classList.remove('no-horz-scroll');
+      bag.classList.add('no-vert-scroll');
     }
 
     dropPins();
