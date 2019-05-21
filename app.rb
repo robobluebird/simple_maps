@@ -63,7 +63,7 @@ class App < Sinatra::Base
     # don't overwrite dups
 
     if obj.upload_file file
-      @map = Map.create(name: params[:name], key: obj.key)
+      @map = Map.create(name: params[:name], key: obj.key, pins: [])
 
       redirect "/maps/#{@map.id}"
     else
