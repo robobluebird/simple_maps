@@ -25,7 +25,7 @@ class Pin
 
   field :x, type: Float
   field :y, type: Float
-  field :guid, type: String
+  field :key, type: String
   field :name, type: String
 end
 
@@ -76,15 +76,15 @@ class App < Sinatra::Base
     map = Map.find params[:map_id]
 
     pin = begin
-            map.pins.find_by guid: params[:guid]
+            map.pins.find_by key: params[:key]
           rescue
-            map.pins.new guid: params[:guid], name: params[:name]
+            map.pins.new key: params[:key], name: params[:name]
           end
 
     pin.x = params[:x]
     pin.y = params[:y]
     pin.save
 
-    json pin: pin
+    json map: map, pin: pin
   end
 end

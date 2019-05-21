@@ -2,11 +2,16 @@
   let map;
   let img;
   let bag;
+  let socket;
 </script>
 
-<h1>
-  <%= @map.name %>
-</h1>
+<div class="header">
+  <h1 class="map">
+    <%= @map.name %>
+  </h1>
+  <div class="upvote"></div>
+  <div class="downvote"></div>
+</div>
 
 <div class="img">
   <img id="img" src="<%= @url %>"></img>
@@ -44,7 +49,7 @@
     map.id = map["_id"]["$oid"];
 
     bag = document.querySelector(".img")
-    img = document.querySelector("#img");
+    img = bag.querySelector("#img");
 
     fit();
 
@@ -60,10 +65,10 @@
       let sMap = maps[map.id];
 
       if (!sMap) {
-        let guid = Guid.newGuid();
+        let key = Guid.newGuid();
 
         sMap = {
-          key: guid,
+          key: key,
           name: null
         };
 
@@ -74,43 +79,86 @@
 
       console.log(sMap);
 
-      let currentPin = document.querySelector('#pin_' + sMap.key);
+      let currentPin = bag.querySelector('#pin_' + sMap.key);
 
       drawPin(event, sMap.key, sMap.name, currentPin);
     });
+
+    socket = new WebSocket('ws://localhost:9292');
+
+    socket.addEventListener('open', function (event) {
+      console.log("ws...g2g!");
+    });
+
+    socket.addEventListener('message', function (event) {
+      console.log('Message from server: ', event.data);
+
+      data = JSON.parse(event.data);
+
+      console.log(data);
+
+      if (data.map) {
+        map = data.map;
+        map.id = data["map"]["_id"]["$oid"];
+      }
+
+      let maps = JSON.parse(localStorage.getItem('simpleMaps'));
+
+      if (data.id && maps) {
+        let sMap = maps[data.id];
+
+        if (sMap) {
+          console.log(sMap.key + " vs " + data.key);
+
+          if (sMap.key != data.key) {
+            console.log("modifying pin...");
+
+            let pin = bag.querySelector('#pin_' + data.key);
+
+            drawPin({ trueX: data.x, trueY: data.y }, data.key, data.name, pin, false);
+          } else {
+            console.log("we sent this message so don't update");
+          }
+        }
+      }
+    });
   };
 
-  function drawPin(event, guid, name, pin) {
-    console.log(event);
-    let xPercent = event.offsetX / img.width;
-    let yPercent = event.offsetY / img.height;
+  function drawPin(event, key, name, pin, persist = true) {
+    let xPercent;
+    let yPercent;
 
-    console.log(event.offsetX);
-    console.log(event.offsetY);
+    if (event.trueX && event.trueY) {
+      xPercent = event.trueX;
+      yPercent = event.trueY;
+    } else {
+      xPercent = event.offsetX / img.width;
+      yPercent = event.offsetY / img.height;
+    }
 
     // 27 and 35 are offsets for the origin of the box vs the
     // "correct" position
     let pos = img.getBoundingClientRect();
-    let left = ((pos.x + window.scrollX) + (img.width * xPercent) - 27) + "px";
+    let left = ((img.width * xPercent) - 27) + "px";
     let top = ((pos.y + window.scrollY) + (img.height * yPercent) - 35) + "px";
-
-    console.log(left);
-    console.log(top);
 
     if (pin) {
       pin.style.left = left;
       pin.style.top = top;
 
+      if (!persist) {
+        console.log("not persisting...");
+        return;
+      } else {
+        console.log("persisting!");
+      }
+
       var xhr = new XMLHttpRequest();
 
-      xhr.open("POST", '/maps/' + map.id + '/pins', true);
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      xhr.onreadystatechange = function() { // Call a function when the state changes.
-        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-          console.dir(this.response);
-        }
-      }
-      xhr.send("name=" + name + "&guid=" + guid + "&x=" + xPercent + "&y= " + yPercent);
+      sned(key, name, xPercent, yPercent, function(response) {
+        console.dir(response);
+        share(key, name, xPercent, yPercent);
+      });
     } else {
       let pin = document.querySelector('.pin.template').cloneNode(true);
       let words = pin.querySelector('.words');
@@ -120,7 +168,7 @@
       }
 
       pin.classList.remove("template");
-      pin.id = 'pin_' + guid; 
+      pin.id = 'pin_' + key; 
       pin.style.left = left;
       pin.style.top = top;
       pin.style.display = "block";
@@ -131,16 +179,25 @@
         bag.appendChild(pin);
         pin.style.width = words.clientWidth + 10 + "px";
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", '/maps/' + map.id + '/pins', true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function() { // Call a function when the state changes.
-          if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-            console.dir(this.response);
-          }
+        if (!persist) {
+          console.log("not persisting...");
+          return;
+        } else {
+          console.log("persisting!");
         }
-        xhr.send("name=" + name + "&guid=" + guid + "&x=" + xPercent + "&y= " + yPercent);
+
+        sned(key, name, xPercent, yPercent, function(response) {
+          console.dir(response);
+          share(key, name, xPercent, yPercent);
+        });
       } else {
+        if (!persist) {
+          console.log("not persisting but never should have got here anyway...");
+          return;
+        } else {
+          console.log("persisting! ...oh no");
+        }
+
         let input = pin.querySelector('input');
 
         let keyup = function(event) {
@@ -148,21 +205,19 @@
 
           if (event.code == "Enter") {
             if (name.length > 0) {
-              var xhr = new XMLHttpRequest();
-              xhr.open("POST", '/maps/' + map.id + '/pins', true);
-              xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-              xhr.onreadystatechange = function() { // Call a function when the state changes.
-                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                  store({ name: name });
+              sned(key, name, xPercent, yPercent, function(response) {
+                console.dir(response);
 
-                  input.removeEventListener("keyup", keyup, true);
-                  input.classList.add("inactive");
-                  words.style.display = "block";
-                  words.appendChild(document.createTextNode(name));
-                  pin.style.width = words.clientWidth + 10 + "px";
-                }
-              }
-              xhr.send("name=" + name + "&guid=" + guid + "&x=" + xPercent + "&y= " + yPercent);
+                store({ name: name });
+
+                input.removeEventListener("keyup", keyup, true);
+                input.classList.add("inactive");
+                words.style.display = "block";
+                words.appendChild(document.createTextNode(name));
+                pin.style.width = words.clientWidth + 10 + "px";
+
+                share(key, name, xPercent, yPercent);
+              });
             }
           }
         };
@@ -176,6 +231,21 @@
     }
   }
 
+  function sned(key, name, x, y, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '/maps/' + map.id + '/pins', true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function() { // Call a function when the state changes.
+      if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+        let r = JSON.parse(this.response);
+        map = r.map;
+        map.id = map["_id"]["$oid"];
+        callback(r);
+      }
+    }
+    xhr.send("name=" + name + "&key=" + key + "&x=" + x + "&y= " + y);
+  }
+
   function store(obj) {
     let maps = JSON.parse(localStorage.getItem('simpleMaps'));
     let sMap = maps[map.id];
@@ -187,6 +257,14 @@
     localStorage.setItem('simpleMaps', JSON.stringify(maps));
   }
 
+  function share(key, name, x, y) {
+    if (key && x && y && socket && map) {
+      let data = JSON.stringify({id: map.id, name: name, key: key, x: x, y: y});
+
+      socket.send(data);
+    }
+  }
+
   function dropPins() {
     let items;
     let pin;
@@ -194,7 +272,7 @@
     let top;
     let words;
     let pos;
-    let pins = document.querySelectorAll('.pin:not(.template)');
+    let pins = bag.querySelectorAll('.pin:not(.template)');
 
     pins.forEach(function (pin) { pin.remove() });
 
@@ -213,7 +291,7 @@
 
       words.appendChild(document.createTextNode(item.name));
 
-      pin.id = "pin_" + item.guid; 
+      pin.id = "pin_" + item.key; 
       pin.style.left = left;
       pin.style.top = top;
       pin.classList.remove("template");

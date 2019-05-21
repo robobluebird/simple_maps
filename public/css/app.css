@@ -4,26 +4,48 @@ html, body {
   margin: 0;
 }
 
-h1 {
+.upvote {
+  cursor: pointer;
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 3;
+  right: -30px;
+  top: 15px;
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid black;
+}
+
+.downvote {
+  cursor: pointer;
+  position: absolute;
+  right: -30px;
+  top: 40px;
+  width: 0; 
+  height: 0; 
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid black;
+}
+
+h1.map {
   text-shadow: 4px 3px 0 #FFFFFF, 2px 2px 2px rgba(206,89,55,0);
 }
 
-.map {
-  height: 100vh;
-  background-image: url('../images/tape.jpg');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+.header {
+  z-index: 3;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
+
 
 img {
   z-index: 2;
   cursor: pointer;
   position: relative;
+  margin: 0;
+  padding: 0;
 }
 
 img.wide {
@@ -70,6 +92,7 @@ img.tall {
 }
 
 .pin .inner-rectangle .words {
+  cursor: pointer;
   display: inline-block;
   margin: auto;
 }
