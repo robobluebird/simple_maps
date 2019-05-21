@@ -275,6 +275,10 @@
     let pins = bag.querySelectorAll('.pin:not(.template)');
 
     pins.forEach(function (pin) { pin.remove() });
+    
+    if (!map.pins) {
+      return;
+    }
 
     map.pins.forEach(function (item) {
       pos = img.getBoundingClientRect();
