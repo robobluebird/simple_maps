@@ -84,7 +84,7 @@
       drawPin(event, sMap.key, sMap.name, currentPin);
     });
 
-    socket = new WebSocket('ws://localhost:9292');
+    socket = new WebSocket('wss://desolate-brook-70124.herokuapp.com:443');
 
     socket.addEventListener('open', function (event) {
       console.log("ws...g2g!");
