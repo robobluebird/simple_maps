@@ -68,6 +68,16 @@ img.tall {
   overflow: auto;
 }
 
+.img.no-horz-scroll {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.img.no-vert-scroll {
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
 .pin {
   z-index: 4;
   width: 50px;
