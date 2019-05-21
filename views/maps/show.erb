@@ -253,6 +253,8 @@
     Object.keys(obj).forEach(function (key) {
       sMap[key] = obj[key];
     });
+    
+    maps[map.id] = sMap;
 
     localStorage.setItem('simpleMaps', JSON.stringify(maps));
   }
