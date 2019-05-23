@@ -147,7 +147,7 @@
     }
 
     let pos = img.getBoundingClientRect();
-    let left = ((img.width * xPercent)) + "px";
+    let left = ((pos.x + window.scrollX) + (img.width * xPercent)) + "px";
     let top = ((pos.y + window.scrollY) + (img.height * yPercent)) + "px";
 
     if (pin) {
@@ -298,8 +298,8 @@
 
     map.pins.forEach(function (item) {
       pos = img.getBoundingClientRect();
-      left = (pos.x + (img.width * item.x)) + "px";
-      top = (pos.y + (img.height * item.y)) + "px";
+      left = ((pos.x + window.scrollX) + (img.width * item.x)) + "px";
+      top = ((pos.y + window.scrollY) + (img.height * item.y)) + "px";
 
       pin = document.querySelector(".pin.template").cloneNode(true);
 
