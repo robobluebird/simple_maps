@@ -5,10 +5,6 @@ html, body {
   padding: 0;
 }
 
-input {
-  font-size: 2em;
-}
-
 img {
   cursor: pointer;
   width: 100%;
