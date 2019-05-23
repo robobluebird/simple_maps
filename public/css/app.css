@@ -2,86 +2,20 @@ html, body {
   height: 100%;
   width: 100%;
   margin: 0;
-  box-sizing: border-box;
+  padding: 0;
 }
 
-div {
-  box-sizing: border-box;
-}
-
-.upvote {
-  cursor: pointer;
-  
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid black;
-}
-
-.downvote {
-  cursor: pointer;
-  width: 0; 
-  height: 0; 
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 10px solid black;
-}
-
-h1.map {
-  text-shadow: 4px 3px 0 #FFFFFF, 2px 2px 2px rgba(206,89,55,0);
-  display: inline-block;
-}
-
-.header {
-  width: 100%;
-  height: auto;
+input {
+  font-size: 2em;
 }
 
 img {
-  z-index: 2;
   cursor: pointer;
-  position: relative;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-img.wide {
-  width: 100%;
-  height: auto;
-}
-
-img.tall {
-  height: 100%;
-  width: auto;
-}
-
-.img {
-  z-index: 1;
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 0;
-  overflow: auto;
-}
-
-.img.no-horz-scroll {
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
-.img.no-vert-scroll {
-  overflow-x: scroll;
-  overflow-y: hidden;
 }
 
 .pin {
-  z-index: 4;
-  width: 50px;
-  height: 24px;
+  width: 100px;
+  height: 48px;
   position: absolute;
   background-color: black;
   padding: 2px;
@@ -105,12 +39,12 @@ img.tall {
   cursor: pointer;
   display: inline-block;
   margin: auto;
+  font-size: 2em;
 }
 
 .pin .inner-rectangle input {
   height: 100%;
   width: 100%;
-  font-size: 12px;
   display: block;
 }
 
@@ -121,7 +55,7 @@ img.tall {
 .pin .outer-triangle {
   position: absolute;
   left: 15px;
-  top: 26px;
+  top: 51px;
   width: 0;
   height: 0;
   border-left: 12px solid transparent;
@@ -132,7 +66,7 @@ img.tall {
 .pin .inner-triangle {
   position: absolute;
   left: 17px;
-  top: 25px;
+  top: 49px;
   width: 0;
   height: 0;
   border-left: 10px solid transparent;

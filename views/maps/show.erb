@@ -5,9 +5,7 @@
   let socket;
 </script>
 
-<div class="img">
-  <img id="img" src="<%= @url %>"></img>
-</div>
+<img id="img" src="<%= @url %>"></img>
 
 <div class="pin template">
   <div class="inner-rectangle">
@@ -43,13 +41,7 @@
   window.onload = function() {
     map = JSON.parse('<%= @map.to_json %>');
     map.id = map["_id"]["$oid"];
-
-    bag = document.querySelector(".img")
-    img = bag.querySelector("#img");
-
-    fit();
-
-    window.onresize = fit;
+    img = document.body.querySelector("#img");
 
     img.addEventListener('click', (event) => {
       let maps = JSON.parse(localStorage.getItem('simpleMaps'));
@@ -75,12 +67,12 @@
 
       console.log(sMap);
 
-      let currentPin = bag.querySelector('#pin_' + sMap.key);
+      let currentPin = document.body.querySelector('#pin_' + sMap.key);
 
       drawPin(event, sMap.key, sMap.name, currentPin);
     });
 
-    socket = new WebSocket('wss://desolate-brook-70124.herokuapp.com:443');
+    socket = new WebSocket("<%= @ws_url %>");
 
     socket.addEventListener('open', function (event) {
       console.log("ws...g2g!");
@@ -109,7 +101,7 @@
           if (sMap.key != data.key) {
             console.log("modifying pin...");
 
-            let pin = bag.querySelector('#pin_' + data.key);
+            let pin = document.body.querySelector('#pin_' + data.key);
 
             drawPin({ trueX: data.x, trueY: data.y }, data.key, data.name, pin, false);
           } else {
@@ -118,7 +110,24 @@
         }
       }
     });
+
+    dropPins();
   };
+
+  function nudge(pin) {
+      let words = pin.querySelector('.words');
+      let outerTriangle = pin.querySelector('.outer-triangle');
+      let innerTriangle = pin.querySelector('.inner-triangle');
+
+      let pinPos = pin.getBoundingClientRect();
+      let triPos = outerTriangle.getBoundingClientRect();
+      let driPos = innerTriangle.getBoundingClientRect();
+
+      pin.style.left = pinPos.left - (pinPos.width / 2) + "px";
+      pin.style.top = (pinPos.top - (pinPos.height + triPos.height)) + "px";
+      outerTriangle.style.left = ((pinPos.width / 2) - (triPos.width / 2)) + "px"
+      innerTriangle.style.left = ((pinPos.width / 2) - (driPos.width / 2)) + "px"
+  }
 
   function drawPin(event, key, name, pin, persist = true) {
     let xPercent;
@@ -132,15 +141,15 @@
       yPercent = event.offsetY / img.height;
     }
 
-    // 27 and 35 are offsets for the origin of the box vs the
-    // "correct" position
     let pos = img.getBoundingClientRect();
-    let left = ((img.width * xPercent) - 27) + "px";
-    let top = ((pos.y + window.scrollY) + (img.height * yPercent) - 35) + "px";
+    let left = ((img.width * xPercent)) + "px";
+    let top = ((pos.y + window.scrollY) + (img.height * yPercent)) + "px";
 
     if (pin) {
       pin.style.left = left;
       pin.style.top = top;
+
+      nudge(pin);
 
       if (!persist) {
         console.log("not persisting...");
@@ -170,10 +179,10 @@
       pin.style.display = "block";
 
       if (name) {
-        console.log('rep');
         words.appendChild(document.createTextNode(name));
-        bag.appendChild(pin);
+        document.body.appendChild(pin);
         pin.style.width = words.clientWidth + 10 + "px";
+        nudge(pin);
 
         if (!persist) {
           console.log("not persisting...");
@@ -209,8 +218,10 @@
                 input.removeEventListener("keyup", keyup, true);
                 input.classList.add("inactive");
                 words.style.display = "block";
+                words.style.width = "auto";
                 words.appendChild(document.createTextNode(name));
                 pin.style.width = words.clientWidth + 10 + "px";
+                nudge(pin);
 
                 share(key, name, xPercent, yPercent);
               });
@@ -223,7 +234,7 @@
         input.classList.remove("inactive");
         input.focus();
         pin.style.width = "100px";
-        bag.appendChild(pin);
+        document.body.appendChild(pin);
       }
     }
   }
@@ -271,7 +282,7 @@
     let top;
     let words;
     let pos;
-    let pins = bag.querySelectorAll('.pin:not(.template)');
+    let pins = document.body.querySelectorAll('.pin:not(.template)');
 
     pins.forEach(function (pin) { pin.remove() });
     
@@ -281,8 +292,8 @@
 
     map.pins.forEach(function (item) {
       pos = img.getBoundingClientRect();
-      left = (pos.x + (img.width * item.x) - 27) + "px";
-      top = (pos.y + (img.height * item.y) - 35) + "px";
+      left = (pos.x + (img.width * item.x)) + "px";
+      top = (pos.y + (img.height * item.y)) + "px";
 
       pin = document.querySelector(".pin.template").cloneNode(true);
 
@@ -299,10 +310,11 @@
       pin.style.top = top;
       pin.classList.remove("template");
 
-      bag.appendChild(pin);
+      document.body.appendChild(pin);
 
       // must get width after appending to the document
       pin.style.width = words.clientWidth + 10 + "px";
+      nudge(pin);
     });
   }
 
