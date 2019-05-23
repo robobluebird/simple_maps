@@ -114,19 +114,24 @@
     dropPins();
   };
 
-  function nudge(pin) {
-      let words = pin.querySelector('.words');
-      let outerTriangle = pin.querySelector('.outer-triangle');
-      let innerTriangle = pin.querySelector('.inner-triangle');
+  function nudge(pin, y = true) {
+    let words = pin.querySelector('.words');
+    let outerTriangle = pin.querySelector('.outer-triangle');
+    let innerTriangle = pin.querySelector('.inner-triangle');
 
-      let pinPos = pin.getBoundingClientRect();
-      let triPos = outerTriangle.getBoundingClientRect();
-      let driPos = innerTriangle.getBoundingClientRect();
+    let pinPos = pin.getBoundingClientRect();
+    let triPos = outerTriangle.getBoundingClientRect();
+    let driPos = innerTriangle.getBoundingClientRect();
 
-      pin.style.left = pinPos.left - (pinPos.width / 2) + "px";
+    if (y) {
       pin.style.top = (pinPos.top - (pinPos.height + triPos.height)) + "px";
-      outerTriangle.style.left = ((pinPos.width / 2) - (triPos.width / 2)) + "px"
-      innerTriangle.style.left = ((pinPos.width / 2) - (driPos.width / 2)) + "px"
+      pin.style.left = pinPos.left - (pinPos.width / 2) + "px";
+    } else {
+      pin.style.left = ((triPos.left + (triPos.width / 2)) - (pinPos.width / 2)) + "px";
+    }
+
+    outerTriangle.style.left = ((pinPos.width / 2) - (triPos.width / 2)) + "px"
+    innerTriangle.style.left = ((pinPos.width / 2) - (driPos.width / 2)) + "px"
   }
 
   function drawPin(event, key, name, pin, persist = true) {
@@ -218,10 +223,10 @@
                 input.removeEventListener("keyup", keyup, true);
                 input.classList.add("inactive");
                 words.style.display = "block";
-                words.style.width = "auto";
+                words.style.width = "fit-content";
                 words.appendChild(document.createTextNode(name));
                 pin.style.width = words.clientWidth + 10 + "px";
-                nudge(pin);
+                nudge(pin, false);
 
                 share(key, name, xPercent, yPercent);
               });
@@ -233,8 +238,9 @@
         words.style.display = "none";
         input.classList.remove("inactive");
         input.focus();
-        pin.style.width = "100px";
+        pin.style.width = "200px";
         document.body.appendChild(pin);
+        nudge(pin);
       }
     }
   }
