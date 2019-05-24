@@ -83,26 +83,8 @@
         map = data.map;
         map.id = data["map"]["_id"]["$oid"];
       }
-
-      let maps = JSON.parse(localStorage.getItem('simpleMaps'));
-
-      if (data.id && maps) {
-        let sMap = maps[data.id];
-
-        if (sMap) {
-          console.log(sMap.key + " vs " + data.key);
-
-          if (sMap.key != data.key) {
-            console.log("modifying pin...");
-
-            let pin = document.body.querySelector('#pin_' + data.key);
-
-            drawPin({ trueX: data.x, trueY: data.y }, data.key, data.name, pin, false);
-          } else {
-            console.log("we sent this message so don't update");
-          }
-        }
-      }
+      
+      dropPins();
     });
 
     dropPins();
