@@ -140,9 +140,15 @@
     if (event.trueX && event.trueY) {
       xPercent = event.trueX;
       yPercent = event.trueY;
+      console.log("trueX");
+      console.log(xPercent);
+      console.log(yPercent);
     } else {
       xPercent = (event.pageX - pos.x) / img.width;
       yPercent = (event.pageY - pos.y)  / img.height;
+      console.log("pageX");
+      console.log(xPercent);
+      console.log(yPercent);
     }
     
     left = ((pos.x + window.scrollX) + (img.width * xPercent)) + "px";
