@@ -21,18 +21,12 @@
 <script type="text/javascript" src="/javascripts/guid.js"></script>
 <script>
   function fit() {
-    let bagPos = bag.getBoundingClientRect();
-
     if (bagPos.width > bagPos.height) {
       img.classList.remove('tall');
       img.classList.add('wide');
-      bag.classList.remove('no-vert-scroll');
-      bag.classList.add('no-horz-scroll');
     } else {
       img.classList.remove('wide');
       img.classList.add('tall');
-      bag.classList.remove('no-horz-scroll');
-      bag.classList.add('no-vert-scroll');
     }
 
     dropPins();
@@ -43,7 +37,9 @@
     map.id = map["_id"]["$oid"];
     img = document.body.querySelector("#img");
     
-    window.onresize = dropPins;
+    fit();
+    
+    window.onresize = fit;
 
     img.addEventListener('click', (event) => {
       let maps = JSON.parse(localStorage.getItem('simpleMaps'));
