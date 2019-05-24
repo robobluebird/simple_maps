@@ -304,8 +304,8 @@
       pos = img.getBoundingClientRect();
       console.log(pos);
       
-      left = (img.width * item.x) + "px";
-      top = (img.height * item.y) + "px";
+      left = (window.scrollX + (img.width * item.x)) + "px";
+      top = (window.scrollY + (img.height * item.y)) + "px";
 
       pin = document.querySelector(".pin.template").cloneNode(true);
 
