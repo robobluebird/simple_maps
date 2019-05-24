@@ -7,8 +7,16 @@ html, body {
 
 img {
   cursor: pointer;
+}
+
+img.wide {
   width: 100%;
   height: auto;
+}
+
+img.tall {
+  height: 100%;
+  width: auto;
 }
 
 .pin {
