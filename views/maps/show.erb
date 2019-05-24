@@ -42,8 +42,6 @@
     map = JSON.parse('<%= @map.to_json %>');
     map.id = map["_id"]["$oid"];
     img = document.body.querySelector("#img");
-    
-    window.onresize = dropPins;
 
     img.addEventListener('click', (event) => {
       let maps = JSON.parse(localStorage.getItem('simpleMaps'));
@@ -81,11 +79,7 @@
     });
 
     socket.addEventListener('message', function (event) {
-      console.log('Message from server: ', event.data);
-
       data = JSON.parse(event.data);
-
-      console.log(data);
 
       if (data.map) {
         map = data.map;
