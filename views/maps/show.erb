@@ -115,7 +115,7 @@
     let yPercent;
     let left;
     let top;
-    let pos = img.getBoundingClientRect();
+    let pin;
 
     if (event.trueX && event.trueY) {
       xPercent = event.trueX;
@@ -131,10 +131,9 @@
       console.log(yPercent);
     }
     
-    left = (img.width * xPercent) + "px";
-    top = (img.height * yPercent) + "px";
+    pin = document.body.querySelector("#pin_" + key);
 
-    if (pin) {
+    if (pin && name) {
       if (!persist) {
         console.log("not persisting...");
         return;
@@ -165,8 +164,15 @@
         } else {
           console.log("persisting! ...oh no");
         }
-                
-        let pin = document.querySelector('.pin.template').cloneNode(true);
+        
+        let appended = false;
+        
+        if (!pin) {
+          pin = document.querySelector('.pin.template').cloneNode(true);
+        } else {
+          appended = true;
+        }
+        
         let words = pin.querySelector('.words');
 
         while (words.firstChild) {
@@ -188,7 +194,8 @@
           }
         };
 
-
+        left = (window.scrollX + img.width * xPercent) + "px";
+        top = (window.scrollY + img.height * yPercent) + "px";
         pin.classList.remove("template");
         pin.id = 'pin_' + key; 
         pin.style.left = left;
@@ -198,7 +205,11 @@
         words.style.display = "none";
         input.classList.remove("inactive");
         pin.style.width = "200px";
-        document.body.appendChild(pin);
+        
+        if (!appended) {
+          document.body.appendChild(pin);
+        }
+        
         nudge(pin);
         input.focus();
       }
