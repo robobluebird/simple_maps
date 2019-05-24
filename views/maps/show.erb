@@ -42,6 +42,8 @@
     map = JSON.parse('<%= @map.to_json %>');
     map.id = map["_id"]["$oid"];
     img = document.body.querySelector("#img");
+    
+    window.onresize = dropPins;
 
     img.addEventListener('click', (event) => {
       let maps = JSON.parse(localStorage.getItem('simpleMaps'));
