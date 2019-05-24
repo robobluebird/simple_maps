@@ -206,6 +206,19 @@
   }
 
   function sned(key, name, x, y, callback) {
+    // optimistically drop pins to cut down on lag
+    let pin = map.pins.find(function(pin) {
+      return pin.key === key;
+    });
+    
+    if (pin) {
+      pin.x = x;
+      pin.y = y;
+      pin.name = name;
+    }
+    
+    dropPins();
+    
     var xhr = new XMLHttpRequest();
     xhr.open("POST", '/maps/' + map.id + '/pins', true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
