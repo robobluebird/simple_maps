@@ -165,8 +165,6 @@
         console.log("persisting!");
       }
 
-      var xhr = new XMLHttpRequest();
-
       sned(key, name, xPercent, yPercent, function(response) {
         console.dir(response);
         share(key, name, xPercent, yPercent);
@@ -256,6 +254,10 @@
         let r = JSON.parse(this.response);
         map = r.map;
         map.id = map["_id"]["$oid"];
+        
+        // inefficient with the current state of drawPin BUT it's a test
+        dropPins();
+        
         callback(r);
       }
     }
