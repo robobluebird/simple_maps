@@ -19,6 +19,11 @@ img.tall {
   width: auto;
 }
 
+input.name-input {
+  margin: 0;
+  height: 24px;
+}
+
 .pin {
   width: 100px;
   position: absolute;
