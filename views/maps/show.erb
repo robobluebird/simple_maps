@@ -115,7 +115,6 @@
     let yPercent;
     let left;
     let top;
-    let pin;
 
     if (event.trueX && event.trueY) {
       xPercent = event.trueX;
@@ -130,8 +129,6 @@
       console.log(xPercent);
       console.log(yPercent);
     }
-    
-    pin = document.body.querySelector("#pin_" + key);
 
     if (pin && name) {
       if (!persist) {
