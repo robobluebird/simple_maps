@@ -143,8 +143,8 @@
       yPercent = (event.pageY - pos.y)  / img.height;
     }
 
-    let left = (pos.x + (img.width * xPercent)) + "px";
-    let top =  (pos.y + (img.height * yPercent)) + "px";
+    let left = ((pos.x + window.scrollX) + (img.width * xPercent)) + "px";
+    let top =  ((pos.y + window.scrollY) + (img.height * yPercent)) + "px";
 
     if (pin) {
       pin.style.left = left;
