@@ -139,16 +139,16 @@
   function drawPin(event, key, name, pin, persist = true) {
     let xPercent;
     let yPercent;
+    let pos = img.getBoundingClientRect();
 
     if (event.trueX && event.trueY) {
       xPercent = event.trueX;
       yPercent = event.trueY;
     } else {
-      xPercent = event.offsetX / img.width;
-      yPercent = event.offsetY / img.height;
+      xPercent = (event.pageX - pos.X) / img.width;
+      yPercent = (event.pageY - pos.y)  / img.height;
     }
 
-    let pos = img.getBoundingClientRect();
     let left = ((pos.x + window.scrollX) + (img.width * xPercent)) + "px";
     let top = ((pos.y + window.scrollY) + (img.height * yPercent)) + "px";
 
