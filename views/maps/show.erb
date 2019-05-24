@@ -144,15 +144,15 @@
       console.log(xPercent);
       console.log(yPercent);
     } else {
-      xPercent = (event.pageX - pos.x) / img.width;
-      yPercent = (event.pageY - pos.y)  / img.height;
+      xPercent = event.pageX / img.width;
+      yPercent = event.pageY  / img.height;
       console.log("pageX");
       console.log(xPercent);
       console.log(yPercent);
     }
     
-    left = ((pos.x + window.scrollX) + (img.width * xPercent)) + "px";
-    top =  ((pos.y + window.scrollY) + (img.height * yPercent)) + "px";
+    left = (img.width * xPercent) + "px";
+    top = (img.height * yPercent) + "px";
 
     if (pin) {
       pin.style.left = left;
@@ -303,8 +303,9 @@
     map.pins.forEach(function (item) {
       pos = img.getBoundingClientRect();
       console.log(pos);
-      left = (pos.x + (img.width * item.x)) + "px";
-      top =  (pos.y + (img.height * item.y)) + "px";
+      
+      left = (img.width * item.x) + "px";
+      top = (img.height * item.y) + "px";
 
       pin = document.querySelector(".pin.template").cloneNode(true);
 
