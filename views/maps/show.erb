@@ -35,6 +35,11 @@
   window.onload = function() {
     map = JSON.parse('<%= @map.to_json %>');
     map.id = map["_id"]["$oid"];
+                     
+    if (!map.pins) {
+      map.pins = [];
+    }
+    
     img = document.body.querySelector("#img");
     
     fit();
