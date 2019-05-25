@@ -112,7 +112,20 @@
     }
 
     outerTriangle.style.left = ((pinPos.width / 2) - (triPos.width / 2)) + "px"
+    outerTriangle.style.top = pinPos.height - 1 + "px";
     innerTriangle.style.left = ((pinPos.width / 2) - (driPos.width / 2)) + "px"
+    innerTriangle.style.top = pinPos.height - 2 + "px";
+  }
+
+  function pinPos(pin) {
+    let outerTriangle = pin.querySelector('.outer-triangle');
+    let pinPos = pin.getBoundingClientRect();
+    let triPos = outerTriangle.getBoundingClientRect();
+
+    return {
+      x: pinPos.x + (pinPos.width / 2),
+      y: pinPos.top + (pinPos.height + triPos.height)
+    };
   }
 
   function drawPin(event, key, name, pin, persist = true) {
@@ -160,27 +173,33 @@
           share(key, name, xPercent, yPercent);
         });
       } else {
-        if (!persist) {
-          console.log("not persisting but never should have got here anyway...");
-          return;
-        } else {
-          console.log("persisting! ...oh no");
-        }
-        
-        let appended = false;
-        
-        if (!pin) {
-          pin = document.querySelector('.pin.template').cloneNode(true);
-        } else {
-          appended = true;
-        }
-        
-        let words = pin.querySelector('.words');
+        console.log("naming...");
 
+        pin = document.querySelector("#pin_" + key);
+
+        if (pin) {
+          pin.remove();
+        }
+
+        pin = document.querySelector('.pin.template').cloneNode(true);
+
+        let words = pin.querySelector('.words');
         while (words.firstChild) {
           words.removeChild(words.firstChild);
         }
-        
+        words.style.display = "none";
+
+        pin.classList.remove("template");
+        pin.id = 'pin_' + key; 
+        pin.style.width = "200px";
+        pin.style.display = "block";
+
+        left = (window.scrollX + img.width * xPercent) + "px";
+        top = (window.scrollY + img.height * yPercent) + "px";
+
+        pin.style.left = left;
+        pin.style.top = top;
+
         let input = pin.querySelector('input');
 
         let keyup = function(event) {
@@ -196,24 +215,14 @@
           }
         };
 
-        left = (window.scrollX + img.width * xPercent) + "px";
-        top = (window.scrollY + img.height * yPercent) + "px";
-        pin.classList.remove("template");
-        pin.id = 'pin_' + key; 
-        pin.style.left = left;
-        pin.style.top = top;
-        pin.style.display = "block";
         input.addEventListener("keyup", keyup, true);
-        words.style.display = "none";
         input.classList.remove("inactive");
-        pin.style.width = "200px";
-        
-        if (!appended) {
-          document.body.appendChild(pin);
-        }
-        
-        nudge(pin);
+
+        document.body.appendChild(pin);
+
         input.focus();
+  
+        nudge(pin);
       }
     }
   }
