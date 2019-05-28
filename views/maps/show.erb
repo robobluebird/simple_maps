@@ -3,8 +3,10 @@
   let img;
   let bag;
   let socket;
+  let msgs;
 </script>
 
+<div class="msgs"></div>
 <img id="img" src="<%= @url %>"></img>
 
 <div class="pin template">
@@ -24,9 +26,13 @@
     if (window.innerWidth > window.innerHeight) {
       img.classList.remove('tall');
       img.classList.add('wide');
+      msgs.classList.remove('tall');
+      msgs.classList.add('wide');
     } else {
       img.classList.remove('wide');
       img.classList.add('tall');
+      msgs.classList.remove('wide');
+      msgs.classList.add('tall');
     }
 
     dropPins();
@@ -41,6 +47,7 @@
     }
     
     img = document.body.querySelector("#img");
+    msgs = document.body.querySelector('.msgs');
     
     fit();
     
