@@ -311,8 +311,12 @@
 
     map.pins.forEach(function (item) {
       pos = img.getBoundingClientRect();
-      left = (img.width * item.x) + "px";
-      top = (img.height * item.y) + "px";
+      
+      left = (pos.width * item.x) + "px";
+      top = (pos.height * item.y) + "px";
+      
+      console.log(pos);
+      console.log(item);
 
       pin = document.body.querySelector(".pin.template").cloneNode(true);
 
