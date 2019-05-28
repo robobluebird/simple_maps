@@ -29,8 +29,11 @@ html, body {
 .msgs {
   flex: 1;
   background-color: white;
-  display: none;
   border: 2px solid black;
+}
+
+.msgs.hidden {
+  display: none;
 }
 
 .msgs.wide {
