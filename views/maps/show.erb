@@ -4,11 +4,14 @@
   let box;
   let socket;
   let msgs;
+  let imgs;
 </script>
 
-<div class="msgs"></div>
 <div class="box">
-  <img id="img" src="<%= @url %>"></img>
+  <div class="msgs"></div>
+  <div class="imgs">
+    <img id="img" src="<%= @url %>"></img>
+  </div>
 </div>
 
 <div class="pin template">
@@ -26,15 +29,7 @@
 <script>
   function fit() {
     if (window.innerWidth > window.innerHeight) {
-      img.classList.remove('tall');
-      img.classList.add('wide');
-      msgs.classList.remove('tall');
-      msgs.classList.add('wide');
     } else {
-      img.classList.remove('wide');
-      img.classList.add('tall');
-      msgs.classList.remove('wide');
-      msgs.classList.add('tall');
     }
 
     dropPins();
@@ -49,8 +44,9 @@
     }
     
     box = document.body.querySelector(".box");
-    img = box.querySelector("#img");
-    msgs = document.body.querySelector(".msgs");
+    imgs = box.querySelector(".imgs");
+    img = imgs.querySelector("#img");
+    msgs = box.querySelector(".msgs");
     
     fit();
     
@@ -80,7 +76,7 @@
 
       console.log(sMap);
 
-      let currentPin = box.querySelector('#pin_' + sMap.key);
+      let currentPin = imgs.querySelector('#pin_' + sMap.key);
 
       drawPin(event, sMap.key, sMap.name, currentPin);
     });
@@ -185,7 +181,7 @@
       } else {
         console.log("naming...");
 
-        pin = box.querySelector("#pin_" + key);
+        pin = imgs.querySelector("#pin_" + key);
 
         if (pin) {
           pin.remove();
@@ -228,7 +224,7 @@
         input.addEventListener("keyup", keyup, true);
         input.classList.remove("inactive");
 
-        box.appendChild(pin);
+        imgs.appendChild(pin);
 
         input.focus();
   
@@ -297,7 +293,7 @@
     let top;
     let words;
     let pos;
-    let pins = box.querySelectorAll('.pin:not(.template)');
+    let pins = imgs.querySelectorAll('.pin:not(.template)');
 
     pins.forEach(function (pin) { pin.remove() });
     
@@ -327,7 +323,7 @@
       pin.style.top = top;
       pin.classList.remove("template");
 
-      box.appendChild(pin);
+      imgs.appendChild(pin);
 
       // must get width after appending to the document
       pin.style.width = words.clientWidth + 10 + "px";
