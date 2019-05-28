@@ -317,6 +317,8 @@
       
       console.log(pos);
       console.log(item);
+      console.log(left);
+      console.log(top);
 
       pin = document.body.querySelector(".pin.template").cloneNode(true);
 
@@ -346,7 +348,7 @@
 
       // must get width after appending to the document
       pin.style.width = words.clientWidth + 10 + "px";
-      nudge(pin);
+      // nudge(pin);
     });
   }
 
