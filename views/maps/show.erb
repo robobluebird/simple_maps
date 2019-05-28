@@ -117,12 +117,16 @@
     let pinPos = pin.getBoundingClientRect();
     let triPos = outerTriangle.getBoundingClientRect();
     let driPos = innerTriangle.getBoundingClientRect();
+    
+    let pinLeft = parseFloat(pin.style.left.slice(0, -2));
+    let pinTop = parseFloat(pin.style.top.slice(0, -2));
+    let triLeft = parseFloat(outerTriangle.style.left.slice(0, -2));
 
     if (y) {
-      pin.style.top = (pinPos.top - (pinPos.height + triPos.height)) + "px";
-      pin.style.left = pinPos.left - (pinPos.width / 2) + "px";
+      pin.style.top = (pinTop - (pinPos.height + triPos.height)) + "px";
+      pin.style.left = (pinLeft - (pinPos.width / 2)) + "px";
     } else {
-      pin.style.left = ((triPos.left + (triPos.width / 2)) - (pinPos.width / 2)) + "px";
+      pin.style.left = ((triLeft + (triPos.width / 2)) - (pinPos.width / 2)) + "px";
     }
 
     outerTriangle.style.left = ((pinPos.width / 2) - (triPos.width / 2)) + "px"
@@ -348,7 +352,7 @@
 
       // must get width after appending to the document
       pin.style.width = words.clientWidth + 10 + "px";
-      // nudge(pin);
+      nudge(pin);
     });
   }
 
