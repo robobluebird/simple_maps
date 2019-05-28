@@ -333,7 +333,14 @@
 
       imgs.appendChild(pin);
       
-      pin.addEventListener("click", 
+      pin.addEventListener("click", function(e) {
+        if (msgs.classList.contains("hidden")) {
+          // populate msgs
+          msgs.classList.remove("hidden");
+        } else {
+          msgs.classList.add("hidden");
+        }
+      });
 
       // must get width after appending to the document
       pin.style.width = words.clientWidth + 10 + "px";
