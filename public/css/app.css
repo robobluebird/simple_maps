@@ -24,6 +24,7 @@ html, body {
 .imgs {
   flex: 1;
   position: relative;
+  overflow: scroll;
 }
 
 .msgs {
