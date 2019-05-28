@@ -8,7 +8,7 @@
 </script>
 
 <div class="box">
-  <div class="msgs"></div>
+  <div class="msgs">chat</div>
   <div class="imgs">
     <img id="img" src="<%= @url %>"></img>
   </div>
@@ -29,7 +29,15 @@
 <script>
   function fit() {
     if (window.innerWidth > window.innerHeight) {
+      box.classList.remove("tall");
+      box.classList.add("wide");
+      msgs.classList.remove("tall");
+      msgs.classList.add("wide");
     } else {
+      box.classList.remove("wide");
+      box.classList.add("tall");
+      msgs.classList.remove("wide");
+      msgs.classList.add("tall");
     }
 
     dropPins();
@@ -324,6 +332,8 @@
       pin.classList.remove("template");
 
       imgs.appendChild(pin);
+      
+      pin.addEventListener("click", 
 
       // must get width after appending to the document
       pin.style.width = words.clientWidth + 10 + "px";
