@@ -1,13 +1,15 @@
 <script>
   let map;
   let img;
-  let bag;
+  let box;
   let socket;
   let msgs;
 </script>
 
 <div class="msgs"></div>
-<img id="img" src="<%= @url %>"></img>
+<div class="box">
+  <img id="img" src="<%= @url %>"></img>
+</div>
 
 <div class="pin template">
   <div class="inner-rectangle">
@@ -46,8 +48,9 @@
       map.pins = [];
     }
     
-    img = document.body.querySelector("#img");
-    msgs = document.body.querySelector('.msgs');
+    box = document.body.querySelector(".box");
+    img = box.querySelector("#img");
+    msgs = box.querySelector(".msgs");
     
     fit();
     
@@ -77,7 +80,7 @@
 
       console.log(sMap);
 
-      let currentPin = document.body.querySelector('#pin_' + sMap.key);
+      let currentPin = box.querySelector('#pin_' + sMap.key);
 
       drawPin(event, sMap.key, sMap.name, currentPin);
     });
@@ -182,13 +185,13 @@
       } else {
         console.log("naming...");
 
-        pin = document.querySelector("#pin_" + key);
+        pin = box.querySelector("#pin_" + key);
 
         if (pin) {
           pin.remove();
         }
 
-        pin = document.querySelector('.pin.template').cloneNode(true);
+        pin = document.body.querySelector('.pin.template').cloneNode(true);
 
         let words = pin.querySelector('.words');
         while (words.firstChild) {
@@ -225,7 +228,7 @@
         input.addEventListener("keyup", keyup, true);
         input.classList.remove("inactive");
 
-        document.body.appendChild(pin);
+        box.appendChild(pin);
 
         input.focus();
   
@@ -294,7 +297,7 @@
     let top;
     let words;
     let pos;
-    let pins = document.body.querySelectorAll('.pin:not(.template)');
+    let pins = box.querySelectorAll('.pin:not(.template)');
 
     pins.forEach(function (pin) { pin.remove() });
     
@@ -309,7 +312,7 @@
       left = (window.scrollX + (img.width * item.x)) + "px";
       top = (window.scrollY + (img.height * item.y)) + "px";
 
-      pin = document.querySelector(".pin.template").cloneNode(true);
+      pin = document.body.querySelector(".pin.template").cloneNode(true);
 
       words = pin.querySelector(".words");
 
@@ -324,7 +327,7 @@
       pin.style.top = top;
       pin.classList.remove("template");
 
-      document.body.appendChild(pin);
+      box.appendChild(pin);
 
       // must get width after appending to the document
       pin.style.width = words.clientWidth + 10 + "px";
