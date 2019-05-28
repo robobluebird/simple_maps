@@ -37,11 +37,13 @@ html, body {
 }
 
 .msgs.wide {
+  min-width: 33%;
   max-width: 33%;
   max-height: auto;
 }
 
 .msgs.tall {
+  min-height: 33%;
   max-height: 33%;
   max-width: auto;
 }
