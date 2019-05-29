@@ -21,12 +21,25 @@ class Pin
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  embedded_in :maps
+  embedded_in :map
+  embeds_many :bits
 
   field :x, type: Float
   field :y, type: Float
   field :key, type: String
   field :name, type: String
+end
+
+class Bit
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  embedded_in :pin
+
+  field :key, type: String
+  field :name, type: String
+  field :link, type: String
+  field :comment, type: Sting
 end
 
 class App < Sinatra::Base
@@ -72,6 +85,20 @@ class App < Sinatra::Base
       @status = 500
       @error = 'there was a problem uploading the file'
     end
+  end
+
+  post '/maps/:map_id/pins/:key' do
+    map = Map.find params[:map_id]
+    pin = map.pins.find_by key: params[:key]
+
+    bit = pin.bits.new(
+      name: params[:name],
+      comment: params[:comment]
+    )
+
+    bit.save
+
+    json map: map, pin: pin, bit: bit
   end
 
   post '/maps/:map_id/pins' do
