@@ -85,44 +85,21 @@ class App < Sinatra::Base
       @error = 'there was a problem uploading the file'
     end
   end
-  
-  post '/maps/:map_id/pins/:pin_id/bits' do
-    map = Map.find params[:map_id]
-    pin = map.pins.find params[:pin_id]
-    bit = pin.bits.new(
-      key: params[:key],
-      name: params[:name],
-      comment: params[:comment]
-    )
-    
-    bit.save
-    
-    json map: map, pin: pin, bit: bit
-  end
-  
-  post '/maps/:map_id/pins/:pin_id' do
-    map = Map.find params[:map_id]
-    pin = map.pins.find params[:pin_id]
-    
-    pin.name = params[:name]
-    pin.x = params[:x]
-    pin.y = params[:y]
-    
-    pin.save
-    
-    json map: map, pin: pin
-  end
 
   post '/maps/:map_id/pins' do
     map = Map.find params[:map_id]
-    pin = map.pins.new(
-      key: params[:key],
-      name: params[:name],
-      x: params[:x],
-      y: params[:y]
-    )
-    
-    pin.save
+
+    pin = begin
+            map.pins.find_by key: params[:key]
+          rescue
+            map.pins.new key: params[:key], name: params[:name]
+          end
+
+    if params[:x] && params[:y]
+      pin.update_attributes x: params[:x], y: params[:y]
+    elsif params[:comment]
+      pin.bits.create name: pin.name, key: pin.key, comment: params[:comment]
+    end
 
     json map: map, pin: pin
   end
