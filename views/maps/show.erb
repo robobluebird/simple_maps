@@ -9,7 +9,7 @@
 </script>
 
 <div class="box">
-  <div class="msgs hidden”>
+  <div class="msgs hidden">
     <textarea class="bit-input" id="bit-input"></textarea>
     <div class="bits">
     </div>
@@ -266,7 +266,7 @@
     }
   }
 
-  function sned(key, name, x, y, callback) {
+  function sned(key, name, x, y, comment, callback) {
     // optimistically drop pins to cut down on lag
     let pin = map.pins.find(function(pin) {
       return pin.key === key;
@@ -305,7 +305,18 @@
         callback(r);
       }
     }
-    xhr.send("name=" + name + "&key=" + key + "&x=" + x + "&y= " + y);
+    
+    let params = "name=" + name + "&key=" + key;
+    
+    if (x && y) {
+      params += ("&x=" + x + "&y=" + y);
+    } else if (comment) {
+      params += ("&comment=" + comment);
+    } else {
+      throw new Error("you really messed up here");
+    }
+    
+    xhr.send(params);
   }
 
   function store(obj) {
