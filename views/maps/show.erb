@@ -195,7 +195,7 @@
         console.log("persisting!");
       }
 
-      sned(key, name, xPercent, yPercent, function(response) {
+      sned(key, name, xPercent, yPercent, null, function(response) {
         console.dir(response);
         share(key, name, xPercent, yPercent);
       });
@@ -208,7 +208,7 @@
           console.log("persisting!");
         }
 
-        sned(key, name, xPercent, yPercent, function(response) {
+        sned(key, name, xPercent, yPercent, null, function(response) {
           share(key, name, xPercent, yPercent);
         });
       } else {
@@ -246,7 +246,7 @@
 
           if (event.code == "Enter") {
             if (name.length > 0) {
-              sned(key, name, xPercent, yPercent, function(response) {
+              sned(key, name, xPercent, yPercent, null, function(response) {
                 store({ name: name });
                 share(key, name, xPercent, yPercent);
               });
