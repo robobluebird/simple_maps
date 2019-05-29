@@ -38,8 +38,7 @@ class Bit
 
   field :key, type: String
   field :name, type: String
-  field :link, type: String
-  field :comment, type: Sting
+  field :comment, type: String
 end
 
 class App < Sinatra::Base
@@ -86,32 +85,43 @@ class App < Sinatra::Base
       @error = 'there was a problem uploading the file'
     end
   end
-
-  post '/maps/:map_id/pins/:key' do
+  
+  post '/maps/:map_id/pins/:pin_id/bits' do
     map = Map.find params[:map_id]
-    pin = map.pins.find_by key: params[:key]
-
+    pin = map.pins.find params[:pin_id]
     bit = pin.bits.new(
+      key: params[:key],
       name: params[:name],
       comment: params[:comment]
     )
-
+    
     bit.save
-
+    
     json map: map, pin: pin, bit: bit
+  end
+  
+  post '/maps/:map_id/pins/:pin_id' do
+    map = Map.find params[:map_id]
+    pin = map.pins.find params[:pin_id]
+    
+    pin.name = params[:name]
+    pin.x = params[:x]
+    pin.y = params[:y]
+    
+    pin.save
+    
+    json map: map, pin: pin
   end
 
   post '/maps/:map_id/pins' do
     map = Map.find params[:map_id]
-
-    pin = begin
-            map.pins.find_by key: params[:key]
-          rescue
-            map.pins.new key: params[:key], name: params[:name]
-          end
-
-    pin.x = params[:x]
-    pin.y = params[:y]
+    pin = map.pins.new(
+      key: params[:key],
+      name: params[:name],
+      x: params[:x],
+      y: params[:y]
+    )
+    
     pin.save
 
     json map: map, pin: pin
