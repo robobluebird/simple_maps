@@ -143,7 +143,6 @@
     xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest");
     xhr.onreadystatechange = function() {
       if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-        console.log(this.response);
         callback(JSON.parse(this.response).map);
       }
     }
@@ -352,7 +351,7 @@
   }
 
   function share() {
-    socket.send(JSON.stringify({ map: map }));
+    socket.send(JSON.stringify({ id: map.id }));
   }
 
   function dropPins() {
