@@ -6,6 +6,7 @@ html, body {
 }
 
 .bits {
+  position: relative;
   width: 100%;
   height: 100%;
   overflow-x: hidden;
@@ -24,6 +25,7 @@ html, body {
 }
 
 .box {
+  position: relative;
   display: flex;
   flex-wrap: nowrap;
   align-items: stretch;
@@ -46,6 +48,7 @@ html, body {
 }
 
 .msgs {
+  position: relative;
   flex: 1;
   background-color: white;
   border: 2px solid black;
@@ -56,14 +59,14 @@ html, body {
 }
 
 .msgs.wide {
-  min-width: 50%;
-  max-width: 50%;
+  min-width: 25%;
+  max-width: 25%;
   max-height: auto;
 }
 
 .msgs.tall {
-  min-height: 25%;
-  max-height: 25%;
+  min-height: 50%;
+  max-height: 50%;
   max-width: auto;
 }
 
