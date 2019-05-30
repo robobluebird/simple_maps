@@ -57,7 +57,9 @@ class App < Sinatra::Base
   get '/maps/:map_id' do
     @map = Map.find params[:map_id]
     
-    if request.xhr?
+    puts @env["HTTP_X_REQUESTED_WITH"]
+    
+    if request.accept? "application/json"
       json map: @map
     else
       signer = Aws::S3::Presigner.new
