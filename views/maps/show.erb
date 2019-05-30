@@ -138,6 +138,7 @@
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/maps/" + mapId);
     xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest");
     xhr.onreadystatechange = function() {
       if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
         console.log(this.response);
