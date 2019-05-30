@@ -6,11 +6,6 @@ html, body {
 }
 
 .bits {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  overflow-y: scroll;
 }
 
 .bit {
@@ -25,7 +20,6 @@ html, body {
 }
 
 .box {
-  position: relative;
   display: flex;
   flex-wrap: nowrap;
   align-items: stretch;
@@ -48,7 +42,6 @@ html, body {
 }
 
 .msgs {
-  position: relative;
   flex: 1;
   background-color: white;
   border: 2px solid black;
