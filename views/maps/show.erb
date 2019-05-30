@@ -442,6 +442,7 @@
         } else {
           fillBits(item);
           bin.id = "bit-input_" + item.key;
+          bin.removeEventListener("keyup", keyup, true);
           bin.addEventListener("keyup", keyup, true);
           msgs.classList.remove("hidden");
           fit();
