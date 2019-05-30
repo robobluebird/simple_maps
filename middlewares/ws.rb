@@ -33,20 +33,9 @@ class Ws
       ws.on :message do |event|
         data = JSON.parse event.data, symbolize_names: true
 
-        p [:message, data]
-
-        if data[:id]
+        if data[:id] && data[:key]
           map = Map.find data[:id]
-          pin = map.pins.find_by key: data[:key]
-
-          pin.name = data[:name]
-          pin.x = data[:x]
-          pin.y = data[:y]
-
-          if pin.save
-            data[:map] = map
-            @clients.each { |client| client.send data.to_json }
-          end
+          @clients.each { |client| client.send { key: data[:key], map: map }.to_json }
         end
       end
 
