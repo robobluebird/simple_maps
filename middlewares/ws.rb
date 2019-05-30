@@ -35,7 +35,8 @@ class Ws
 
         if data[:id] && data[:key]
           map = Map.find data[:id]
-          @clients.each { |client| client.send { key: data[:key], map: map }.to_json }
+          data = { map: map }
+          @clients.each { |client| client.send data.to_json }
         end
       end
 
