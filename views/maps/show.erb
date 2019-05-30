@@ -403,17 +403,22 @@
       pin.classList.remove("template");
 
       imgs.appendChild(pin);
+      
+      let lock = false;
 
       let keyup = function(e) {
-        let comment = bin.value;
+        if (!lock) {
+          lock = true;
+          let comment = bin.value;
 
-        if (event.code == "Enter") {
-          if (comment.length > 0) {
-            sned(item.key, item.name, null, null, comment, function(response) {
-              bin.value = "";
-              bin.blur()
-              share(item.key, item.name, null, null, comment);
-            });
+          if (event.code == "Enter") {
+            if (comment.length > 0) {
+              sned(item.key, item.name, null, null, comment, function(response) {
+                bin.value = "";
+                bin.blur();
+                lock = false;
+              });
+            }
           }
         }
       }
