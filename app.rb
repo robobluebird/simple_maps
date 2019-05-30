@@ -55,12 +55,17 @@ class App < Sinatra::Base
   end
 
   get '/maps/:map_id' do
-    @map = Map.find(params[:map_id])
-    signer = Aws::S3::Presigner.new
-    @url = signer.presigned_url(:get_object, bucket: "smistore", key: @map.key)
-    scheme = request.scheme == "http" ? "ws" : "wss"
-    @ws_url = "#{scheme}://#{request.host}:#{request.port}"
-    erb :'maps/show'
+    @map = Map.find params[:map_id]
+    
+    if request.xhr?
+      json map: @map
+    else
+      signer = Aws::S3::Presigner.new
+      @url = signer.presigned_url :get_object, bucket: "smistore", key: @map.key
+      scheme = request.scheme == "http" ? "ws" : "wss"
+      @ws_url = "#{scheme}://#{request.host}:#{request.port}"
+      erb :'maps/show'
+    end
   end
 
   get '/maps' do
