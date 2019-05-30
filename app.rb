@@ -102,8 +102,8 @@ class App < Sinatra::Base
 
     if params[:x] && params[:y]
       pin.update_attributes x: params[:x], y: params[:y]
-    elsif params[:comment]
-      pin.bits.create name: pin.name, key: pin.key, comment: params[:comment]
+    elsif params[:comment] && params[:comment_key] && params[:comment_name]
+      pin.bits.create name: params[:comment_name], key: params[:comment_key], comment: params[:comment]
     end
 
     json map: map, pin: pin
