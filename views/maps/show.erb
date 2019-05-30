@@ -94,7 +94,7 @@
       });
 
       socket.addEventListener('message', function (event) {
-        data = JSON.parse(event.data);
+        let data = JSON.parse(event.data);
 
         if (data.map) {
           map = data.map;
@@ -109,9 +109,9 @@
               p.bits = [];
             }
           });
+          
+          dropPins();
         }
-      
-        dropPins();
       });
 
       dropPins();
@@ -214,8 +214,7 @@
       }
 
       sned(key, name, xPercent, yPercent, null, function(response) {
-        console.dir(response);
-        share(key, name, xPercent, yPercent, null);
+        share();
       });
     } else {
       if (name) {
@@ -227,7 +226,7 @@
         }
 
         sned(key, name, xPercent, yPercent, null, function(response) {
-          share(key, name, xPercent, yPercent, null);
+          share();
         });
       } else {
         console.log("naming...");
@@ -266,7 +265,7 @@
             if (name.length > 0) {
               sned(key, name, xPercent, yPercent, null, function(response) {
                 store({ name: name });
-                share(key, name, xPercent, yPercent, null);
+                share();
               });
             }
           }
@@ -350,20 +349,8 @@
     localStorage.setItem('simpleMaps', JSON.stringify(maps));
   }
 
-  function share(key, name, x, y, comment) {
-    let data;
-
-    if (key && socket && map) {
-      if (x && y) {
-        data = JSON.stringify({id: map.id, name: name, key: key, x: x, y: y});
-      } else if (comment) {
-        data = JSON.stringify({id: map.id, name: name, key: key, comment: comment});
-      } else {
-        throw new Error("this couldn't happen...");
-      }
-
-      socket.send(data);
-    }
+  function share() {
+    socket.send(JSON.stringify({ map: map });
   }
 
   function dropPins() {
@@ -412,6 +399,7 @@
             sned(item.key, item.name, null, null, comment, function(response) {
               bin.value = "";
               bin.blur();
+              share();
             });
           }
         }
