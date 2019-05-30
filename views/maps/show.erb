@@ -7,6 +7,8 @@
   let imgs;
   let bits;
   let wider;
+  let pinKey = null;
+  let pinName = null;
 </script>
 
 <div class="box">
@@ -239,7 +241,7 @@
         console.log("persisting!");
       }
 
-      sned(key, name, xPercent, yPercent, null, function(response) {
+      sned(key, name, xPercent, yPercent, null, null, null, function(response) {
         share();
       });
     } else {
@@ -251,7 +253,7 @@
           console.log("persisting!");
         }
 
-        sned(key, name, xPercent, yPercent, null, function(response) {
+        sned(key, name, xPercent, yPercent, null, null, null, function(response) {
           share();
         });
       } else {
@@ -289,7 +291,7 @@
 
           if (event.code == "Enter") {
             if (name.length > 0) {
-              sned(key, name, xPercent, yPercent, null, function(response) {
+              sned(key, name, xPercent, yPercent, null, null, null, function(response) {
                 store({ name: name });
                 share();
               });
@@ -306,7 +308,7 @@
     }
   }
 
-  function sned(key, name, x, y, comment, callback) {
+  function sned(key, name, x, y, comment, commentKey, commentName, callback) {
     if (x && y) {
       // optimistically drop pins to keep things snappy
 
@@ -354,7 +356,7 @@
     if (x && y) {
       params += ("&x=" + x + "&y=" + y);
     } else if (comment) {
-      params += ("&comment=" + comment);
+      params += ("&comment=" + comment + "&comment_key=" + commentKey + "&comment_name=" + commentName);
     } else {
       throw new Error("you really messed up here");
     }
@@ -426,12 +428,16 @@
         }
 
         if (opened) {
+          pinKey = null;
+          pinName = null;
           bin.removeEventListener("keyup", addBit, true);
           bin.id = "bit-input"
           msgs.classList.add("hidden");
           fit();
         } else {
           title.appendChild(document.createTextNode("comments for: " + item.name));
+          pinKey = item.key;
+          pinName = item.name;
           fillBits(item);
           bin.id = "bit-input_" + item.key;
           bin.addEventListener("keyup", addBit, true);
@@ -512,7 +518,7 @@
   function addBit(e) {
     let comment = bin.value;
     
-    if (!myKey() || !myName()) {
+    if (!pinKey || !pinName || !myKey() || !myName()) {
       console.log("well this is bad");
       return;
     } else {
@@ -524,7 +530,7 @@
         bin.value = "";
         bin.blur();
             
-        sned(myKey(), myName(), null, null, comment, function(response) {
+        sned(pinKey, pinName, null, null, comment, myKey(), myName(), function(response) {
           share();
         });
       }
