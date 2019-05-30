@@ -5,6 +5,10 @@ html, body {
   padding: 0;
 }
 
+.bits {
+  overflow: scroll;
+}
+
 .bit {
   padding: 5px;
   border-bottom: 2px dotted black;
