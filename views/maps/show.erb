@@ -421,9 +421,10 @@
 
         if (event.code == "Enter") {
           if (comment.length > 0) {
+            bin.value = "";
+            bin.blur();
+            
             sned(item.key, item.name, null, null, comment, function(response) {
-              bin.value = "";
-              bin.blur();
               share();
             });
           }
