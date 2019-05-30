@@ -33,7 +33,7 @@ class Ws
       ws.on :message do |event|
         data = JSON.parse event.data, symbolize_names: true
 
-        if data[:id] && data[:key]
+        if data[:id]
           map = Map.find data[:id]
           data = { map: map }
           @clients.each { |client| client.send data.to_json }
