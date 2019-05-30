@@ -32,6 +32,92 @@
 
 <script type="text/javascript" src="/javascripts/guid.js"></script>
 <script>
+  window.onload = function() {
+    let mapId = "<%= @map.id %>";
+    
+    getMap(mapId, function(fetchedMap) {
+      map = fetchedMap;
+      map.id = map["_id"]["$oid"];
+
+      if (!map.pins) {
+        map.pins = [];
+      }
+
+      map.pins.forEach(function(p) {
+        if (!p.bits) {
+          p.bits = [];
+        }
+      });
+      
+      box = document.body.querySelector(".box");
+      imgs = box.querySelector(".imgs");
+      img = imgs.querySelector("#img");
+      msgs = box.querySelector(".msgs");
+      bits = msgs.querySelector(".bits");
+      bin = msgs.querySelector("#bit-input");
+    
+      fit();
+    
+      window.onresize = fit;
+
+      img.addEventListener('click', (event) => {
+        let maps = JSON.parse(localStorage.getItem('simpleMaps'));
+
+        if (!maps) {
+          maps = initializeMapStorage();
+        }
+
+        let sMap = maps[map.id];
+
+        if (!sMap) {
+          let key = Guid.newGuid();
+
+          sMap = {
+            key: key,
+            name: null
+          };
+
+          maps[map.id] = sMap;
+
+          localStorage.setItem('simpleMaps', JSON.stringify(maps));
+        }
+
+        let currentPin = imgs.querySelector('#pin_' + sMap.key);
+
+        drawPin(event, sMap.key, sMap.name, currentPin);
+      });
+
+      socket = new WebSocket("<%= @ws_url %>");
+
+      socket.addEventListener('open', function (event) {
+        console.log("ws...g2g!");
+      });
+
+      socket.addEventListener('message', function (event) {
+        data = JSON.parse(event.data);
+
+        if (data.map) {
+          map = data.map;
+          map.id = data["map"]["_id"]["$oid"];
+
+          if (!map.pins) {
+            map.pins = [];
+          }
+
+          map.pins.forEach(function(p) {
+            if (!p.bits) {
+              p.bits = [];
+            }
+          });
+        }
+      
+        dropPins();
+      });
+
+      dropPins();
+    });
+  };
+  
   function fit() {
     if (window.innerWidth > window.innerHeight) {
       box.classList.remove("tall");
@@ -47,88 +133,17 @@
 
     dropPins();
   }
-
-  window.onload = function() {
-    map = JSON.parse('<%= @map.to_json %>');
-    map.id = map["_id"]["$oid"];
-                     
-    if (!map.pins) {
-      map.pins = [];
+  
+  function getMap(mapId, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/maps/" + mapId);
+    xhr.onreadystatechange = function() {
+      if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+        callback(JSON.parse(this.response));
+      }
     }
-
-    map.pins.forEach(function(p) {
-      if (!p.bits) {
-        p.bits = [];
-      }
-    });
-    
-    box = document.body.querySelector(".box");
-    imgs = box.querySelector(".imgs");
-    img = imgs.querySelector("#img");
-    msgs = box.querySelector(".msgs");
-    bits = msgs.querySelector(".bits");
-    bin = msgs.querySelector("#bit-input");
-    
-    fit();
-    
-    window.onresize = fit;
-
-    img.addEventListener('click', (event) => {
-      let maps = JSON.parse(localStorage.getItem('simpleMaps'));
-
-      if (!maps) {
-        maps = initializeMapStorage();
-      }
-
-      let sMap = maps[map.id];
-
-      if (!sMap) {
-        let key = Guid.newGuid();
-
-        sMap = {
-          key: key,
-          name: null
-        };
-
-        maps[map.id] = sMap;
-
-        localStorage.setItem('simpleMaps', JSON.stringify(maps));
-      }
-
-      let currentPin = imgs.querySelector('#pin_' + sMap.key);
-
-      drawPin(event, sMap.key, sMap.name, currentPin);
-    });
-
-    socket = new WebSocket("<%= @ws_url %>");
-
-    socket.addEventListener('open', function (event) {
-      console.log("ws...g2g!");
-    });
-
-    socket.addEventListener('message', function (event) {
-      data = JSON.parse(event.data);
-
-      if (data.map) {
-        map = data.map;
-        map.id = data["map"]["_id"]["$oid"];
-
-        if (!map.pins) {
-          map.pins = [];
-        }
-
-        map.pins.forEach(function(p) {
-          if (!p.bits) {
-            p.bits = [];
-          }
-        });
-      }
-      
-      dropPins();
-    });
-
-    dropPins();
-  };
+    xhr.send();
+  }
 
   function nudge(pin, y = true) {
     let words = pin.querySelector('.words');
@@ -285,8 +300,8 @@
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.onreadystatechange = function() { // Call a function when the state changes.
       if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-        let r = JSON.parse(this.response);
-        map = r.map;
+        let response = JSON.parse(this.response);
+        map = response.map;
         map.id = map["_id"]["$oid"];
 
         if (!map.pins) {
@@ -302,7 +317,7 @@
         // inefficient with the current state of drawPin BUT it's a test
         dropPins();
         
-        callback(r);
+        callback(response);
       }
     }
     
