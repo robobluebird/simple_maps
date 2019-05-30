@@ -7,6 +7,8 @@
   let imgs;
   let bits;
   let wider;
+  let pinKey = null;
+  let pinName = null;
 </script>
 
 <div class="box">
@@ -416,34 +418,22 @@
 
       imgs.appendChild(pin);
       
-      let keyup = function(e) {
-        let comment = bin.value;
-
-        if (event.code == "Enter") {
-          if (comment.length > 0) {
-            bin.value = "";
-            bin.blur();
-            
-            sned(item.key, item.name, null, null, comment, function(response) {
-              share();
-            });
-          }
-        }
-      }
-      
       pin.addEventListener("click", function(e) {
         let opened = msgs.querySelector("#bit-input_" + item.key);
 
         if (opened) {
-          bin.removeEventListener("keyup", keyup, true);
+          pinKey = null;
+          pinName = null;
+          bin.removeEventListener("keyup", addBit, true);
           bin.id = "bit-input"
           msgs.classList.add("hidden");
           fit();
         } else {
           fillBits(item);
+          pinKey = item.key;
+          pinName = item.name;
           bin.id = "bit-input_" + item.key;
-          bin.removeEventListener("keyup", keyup, true);
-          bin.addEventListener("keyup", keyup, true);
+          bin.addEventListener("keyup", addBit, true);
           msgs.classList.remove("hidden");
           fit();
         }
@@ -475,7 +465,28 @@
     });
   }
 
-  function addBit(e, key, name) {
+  function addBit(e) {
+    let comment = bin.value;
+    
+    if (!pinKey || !pinName) {
+      console.log("well this is bad");
+      pinKey = null;
+      pinName = null;
+      return;
+    } else {
+      console.log(pinKey, " - ", pinName);
+    }
+
+    if (event.code == "Enter") {
+      if (comment.length > 0) {
+        bin.value = "";
+        bin.blur();
+            
+        sned(pinKey, pinName, null, null, comment, function(response) {
+          share();
+        });
+      }
+    }
   }
 
   function initializeMapStorage() {
