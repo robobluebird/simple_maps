@@ -59,7 +59,7 @@ class App < Sinatra::Base
     
     puts @env["HTTP_X_REQUESTED_WITH"]
     
-    if request.accept? "application/json"
+    if request.xhr?
       json map: @map
     else
       signer = Aws::S3::Presigner.new
