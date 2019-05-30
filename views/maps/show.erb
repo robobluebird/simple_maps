@@ -468,7 +468,18 @@
       let bit = document.createElement("div");
 
       bit.classList.add("bit");
-      bit.appendChild(document.createTextNode(b.comment));
+      
+      let nameDiv = document.createElement("div");
+      nameDiv.classList.add("bit-name");
+      nameDiv.appendChild(document.createTextNode(b.name));
+      
+      let commentDiv = document.createElement("div");
+      commentDiv.classList.add("bit-comment");
+      commentDiv.appendChild(document.createTextNode(b.comment));
+      
+      bit.appendChild(nameDiv);
+      bit.appendChild(commentDiv);
+      
       bits.insertBefore(bit, bits.firstChild);
     });
   }
