@@ -126,13 +126,19 @@
       box.classList.add("wide");
       msgs.classList.remove("tall");
       msgs.classList.add("wide");
-      img.classList.remove("tall");
-      img.classList.add("wide");
     } else {
       box.classList.remove("wide");
       box.classList.add("tall");
       msgs.classList.remove("wide");
       msgs.classList.add("tall");
+    }
+    
+    let imgsPos = imgs.getBoundlingClientRect();
+    
+    if (imgsPos.width > imgsPos.height) {
+      img.classList.remove("tall");
+      img.classList.add("wide");
+    } else {
       img.classList.remove("wide");
       img.classList.add("tall");
     }
