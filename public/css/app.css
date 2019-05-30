@@ -8,6 +8,10 @@ html, body {
 .bits {
 }
 
+.bit-name {
+  font-style: italic;
+}
+
 .bit {
   padding: 5px;
   border-bottom: 2px dotted black;
