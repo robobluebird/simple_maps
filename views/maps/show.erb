@@ -423,11 +423,13 @@
           bin.removeEventListener("keyup", keyup, true);
           bin.id = "bit-input"
           msgs.classList.add("hidden");
+          fit();
         } else {
           fillBits(item);
           bin.id = "bit-input_" + item.key;
           bin.addEventListener("keyup", keyup, true);
           msgs.classList.remove("hidden");
+          fit();
         }
       });
 
