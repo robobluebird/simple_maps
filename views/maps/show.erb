@@ -6,6 +6,7 @@
   let msgs;
   let imgs;
   let bits;
+  let wider;
 </script>
 
 <div class="box">
@@ -55,6 +56,14 @@
       msgs = box.querySelector(".msgs");
       bits = msgs.querySelector(".bits");
       bin = msgs.querySelector("#bit-input");
+      
+      let imgPos = img.getBoundingClientRect();
+      
+      if (imgPos.width > imgPos.height) {
+        wider = true;
+      } else {
+        wider = false;
+      }
     
       fit();
     
@@ -139,8 +148,13 @@
       img.classList.remove("tall");
       img.classList.add("wide");
     } else {
-      img.classList.remove("wide");
-      img.classList.add("tall");
+      if (wider) {
+        img.classList.remove("wide");
+        img.classList.add("tall");
+      } else {
+        img.classList.remove("tall");
+        img.classList.add("wide");
+      }
     }
 
     dropPins();
