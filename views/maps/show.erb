@@ -197,7 +197,7 @@
 
       sned(key, name, xPercent, yPercent, null, function(response) {
         console.dir(response);
-        share(key, name, xPercent, yPercent);
+        share(key, name, xPercent, yPercent, null);
       });
     } else {
       if (name) {
@@ -209,7 +209,7 @@
         }
 
         sned(key, name, xPercent, yPercent, null, function(response) {
-          share(key, name, xPercent, yPercent);
+          share(key, name, xPercent, yPercent, null);
         });
       } else {
         console.log("naming...");
@@ -248,7 +248,7 @@
             if (name.length > 0) {
               sned(key, name, xPercent, yPercent, null, function(response) {
                 store({ name: name });
-                share(key, name, xPercent, yPercent);
+                share(key, name, xPercent, yPercent, null);
               });
             }
           }
@@ -256,29 +256,29 @@
 
         input.addEventListener("keyup", keyup, true);
         input.classList.remove("inactive");
-
         imgs.appendChild(pin);
-
         input.focus();
-  
         nudge(pin);
       }
     }
   }
 
   function sned(key, name, x, y, comment, callback) {
-    // optimistically drop pins to cut down on lag
-    let pin = map.pins.find(function(pin) {
-      return pin.key === key;
-    });
-    
-    if (pin) {
-      pin.x = x;
-      pin.y = y;
-      pin.name = name;
+    if (x && y) {
+      // optimistically drop pins to keep things snappy
+
+      let pin = map.pins.find(function(pin) {
+        return pin.key === key;
+      });
+      
+      if (pin) {
+        pin.x = x;
+        pin.y = y;
+        pin.name = name;
+      }
+      
+      dropPins();
     }
-    
-    dropPins();
     
     var xhr = new XMLHttpRequest();
     xhr.open("POST", '/maps/' + map.id + '/pins', true);
@@ -332,9 +332,17 @@
     localStorage.setItem('simpleMaps', JSON.stringify(maps));
   }
 
-  function share(key, name, x, y) {
-    if (key && x && y && socket && map) {
-      let data = JSON.stringify({id: map.id, name: name, key: key, x: x, y: y});
+  function share(key, name, x, y, comment) {
+    let data;
+
+    if (key && socket && map) {
+      if (x && y) {
+        data = JSON.stringify({id: map.id, name: name, key: key, x: x, y: y});
+      } else if (comment) {
+        data = JSON.stringify({id: map.id, name: name, key: key, comment: comment});
+      } else {
+        throw new Error("this couldn't happen...");
+      }
 
       socket.send(data);
     }
@@ -377,37 +385,63 @@
       pin.classList.remove("template");
 
       imgs.appendChild(pin);
+
+      let keyup = function(e) {
+        let comment = bin.value;
+
+        if (event.code == "Enter") {
+          if (comment.length > 0) {
+            sned(item.key, item.name, null, null, comment, function(response) {
+              bin.value = "";
+              bin.blur()
+              share(item.key, item.name, null, null, comment);
+            });
+          }
+        }
+      }
       
       pin.addEventListener("click", function(e) {
-        if (msgs.classList.contains("hidden")) {
-          item.bits.forEach(function(b) {
-            let bit = document.createElement("div");
+        let opened = msgs.querySelector("#bit-input_" + item.key);
 
-            bit.classList.add("bit");
-            bit.appendChild(document.createTextNode(b.comment));
-            bits.insertBefore(bit, bits.firstChild);
-          });
-
-          bin.id = bin.id + "_" + item.key;
-
-          bin.addEventListener("click", addBit);
-
-          msgs.classList.remove("hidden");
-        } else {
-          bin.removeEventListener("click", addBit);
+        if (opened) {
+          bin.removeEventListener("keyup", keyup, true);
           bin.id = "bit-input"
-
           msgs.classList.add("hidden");
+        } else {
+          fillBits(item);
+          bin.id = bin.id + "_" + item.key;
+          bin.addEventListener("keyup", keyup, true);
+          msgs.classList.remove("hidden");
         }
       });
 
       // must get width after appending to the document
       pin.style.width = words.clientWidth + 10 + "px";
       nudge(pin);
+
+      // fill comments if this pin's comments are visible
+      let opened = msgs.querySelector("#bit-input_" + item.key);
+      if (opened) {
+        fillBits(item);
+      }
     });
   }
 
-  function addBit(e) {
+  function fillBits(pin) {
+    while (bits.firstChild) {
+      bits.removeChild(bits.firstChild);
+    }
+
+    pin.bits.forEach(function(b) {
+      let bit = document.createElement("div");
+
+      bit.classList.add("bit");
+      bit.appendChild(document.createTextNode(b.comment));
+      bits.insertBefore(bit, bits.firstChild);
+    });
+  }
+
+  function addBit(e, key, name) {
   }
 
   function initializeMapStorage() {

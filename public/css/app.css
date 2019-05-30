@@ -6,6 +6,7 @@ html, body {
 }
 
 .bit {
+  padding: 5px;
   border-bottom: 2px dotted black;
 }
 
