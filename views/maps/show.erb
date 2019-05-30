@@ -6,7 +6,6 @@
   let msgs;
   let imgs;
   let bits;
-  let lock = false;
 </script>
 
 <div class="box">
@@ -406,18 +405,14 @@
       imgs.appendChild(pin);
       
       let keyup = function(e) {
-        if (!lock) {
-          lock = true;
-          let comment = bin.value;
+        let comment = bin.value;
 
-          if (event.code == "Enter") {
-            if (comment.length > 0) {
-              sned(item.key, item.name, null, null, comment, function(response) {
-                bin.value = "";
-                bin.blur();
-                lock = false;
-              });
-            }
+        if (event.code == "Enter") {
+          if (comment.length > 0) {
+            sned(item.key, item.name, null, null, comment, function(response) {
+              bin.value = "";
+              bin.blur();
+            });
           }
         }
       }
