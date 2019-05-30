@@ -427,7 +427,7 @@
           msgs.classList.add("hidden");
         } else {
           fillBits(item);
-          bin.id = bin.id + "_" + item.key;
+          bin.id = "bit-input_" + item.key;
           bin.addEventListener("keyup", keyup, true);
           msgs.classList.remove("hidden");
         }
