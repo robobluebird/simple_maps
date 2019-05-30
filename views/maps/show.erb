@@ -137,6 +137,7 @@
   function getMap(mapId, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "/maps/" + mapId);
+    xhr.setRequestHeader("Accept", "application/json");
     xhr.onreadystatechange = function() {
       if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
         callback(JSON.parse(this.response));
