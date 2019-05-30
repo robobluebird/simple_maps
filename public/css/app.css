@@ -65,9 +65,13 @@ img {
 }
 
 img.wide {
+  width: 100%;
+  height: auto;
 }
 
 img.tall {
+  height: 100%;
+  width: auto;
 }
 
 input.name-input {
