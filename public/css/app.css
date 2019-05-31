@@ -46,6 +46,7 @@ html, body {
 }
 
 .msgs {
+  overflow: scroll;
   flex: 1;
   background-color: white;
   border: 2px solid black;

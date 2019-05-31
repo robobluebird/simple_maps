@@ -7,6 +7,12 @@ require 'json'
 
 Mongoid.load! './mongoid.yml'
 
+class Location
+end
+
+class SubLocation
+end
+
 class Map
   include Mongoid::Document
   include Mongoid::Timestamps
