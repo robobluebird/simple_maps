@@ -8,19 +8,34 @@ require 'json'
 Mongoid.load! './mongoid.yml'
 
 class Location
-end
+  include Mongoid::Document
+  include Mongoid::Timestamps
 
-class SubLocation
+  recursively_embeds_many
+  embeds_many :maps
+  embeds_many :tags
 end
 
 class Map
   include Mongoid::Document
   include Mongoid::Timestamps
 
+  embedded_in :location
   embeds_many :pins
+  embeds_many :tags
 
   field :name, type: String
   field :key, type: String
+end
+
+class Tag
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  embedded_in :location
+  embedded_in :map
+
+  field :name, type: String
 end
 
 class Pin
@@ -60,7 +75,18 @@ class App < Sinatra::Base
     erb :'maps/new'
   end
 
-  get '/maps/:map_id' do
+  get '/locations' do
+    @locations = Location.all
+    erb :'locations/index'
+  end
+
+  get '/locations/:location_id' do
+    @location = Location.find params[:location_id]
+    erb :'locations/show'
+  end
+
+  get '/locations/:location_id/maps/:map_id' do
+    @location = Location.find params[:location_id]
     @map = Map.find params[:map_id]
     
     if request.accept? "text/html"
@@ -74,12 +100,16 @@ class App < Sinatra::Base
     end
   end
 
-  get '/maps' do
-    @maps = Map.all
+  get '/locations/:location_id/maps' do
+    @maps = Location.find(params[:location_id]).maps || []
     erb :'maps/index'
   end
 
-  post '/maps' do
+  post "/locations" do
+  end
+
+  post '/locations/:location_id/maps' do
+    location = Location.find params[:location_id]
     filename = params[:map][:filename]
     file = params[:map][:tempfile]
 
@@ -88,17 +118,17 @@ class App < Sinatra::Base
     # don't overwrite dups
 
     if obj.upload_file file
-      @map = Map.create(name: params[:name], key: obj.key, pins: [])
-
-      redirect "/maps/#{@map.id}"
+      map = location.maps.create name: params[:name], key: obj.key
+      redirect "/maps/#{map.id}"
     else
       @status = 500
       @error = 'there was a problem uploading the file'
     end
   end
 
-  post '/maps/:map_id/pins' do
-    map = Map.find params[:map_id]
+  post '/locations/:location_id/maps/:map_id/pins' do
+    location = Location.find params[:location_id]
+    map = location.maps.find params[:map_id]
 
     pin = begin
             map.pins.find_by key: params[:key]
@@ -109,7 +139,11 @@ class App < Sinatra::Base
     if params[:x] && params[:y]
       pin.update_attributes x: params[:x], y: params[:y]
     elsif params[:comment] && params[:comment_key] && params[:comment_name]
-      pin.bits.create name: params[:comment_name], key: params[:comment_key], comment: params[:comment]
+      pin.bits.create(
+        name: params[:comment_name],
+        key: params[:comment_key],
+        comment: params[:comment]
+      )
     end
 
     json map: map, pin: pin
