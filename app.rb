@@ -12,6 +12,7 @@ class Location
   include Mongoid::Timestamps
 
   embeds_many :maps
+  recursively_embeds_many
 
   field :name, type: String
   field :key, type: String
