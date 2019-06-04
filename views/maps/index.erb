@@ -1,3 +1,6 @@
-<% @maps.each do |map| %>
-  <a href="/maps/<%= map.id %>"><%= map.name %></a>
+<h1>maps in <b><%= @location.name %></b></h1>
+<% @location.maps.each do |map| %>
+  <a href="/locations/#{@location.id}/maps/#{map.id}">
+    <%= map.key %>
+  </a>
 <% end %>
