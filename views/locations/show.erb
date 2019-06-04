@@ -1,5 +1,5 @@
 <h1><%= @location.name %></h1>
-<a href="/locations/#{@location.id}/maps/new">new map</a>
+<a href="/locations/<%= @location.id %>/maps/new">new map</a>
 <ul>
   <% @location.maps.each do |map| %>
     <li>
