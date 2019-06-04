@@ -2,8 +2,10 @@
 <a href="/locations/#{@location.id}/maps/new">new map</a>
 <ul>
   <% @location.maps.each do |map| %>
-    <a href="/locations/#{@location.id}/maps/#{map.id}">
-      <%= map.key %>
-    </a>
+    <li>
+      <a href="/locations/<%= @location.id %>/maps/<%= map.id %>">
+        <%= map.key %>
+      </a>
+    </li>
   <% end %>
 </ul>
