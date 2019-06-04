@@ -1,14 +1,6 @@
 <h1>new map in <b><%= @location.name %></b></h1>
 <form method="POST" action="/locations/#{@location.id}/maps" enctype="multipart/form-data">
-  <div class="field">
-    <label for="map">map file</label>
-    <input type="file" name="map" id="map" accept="image/png,image/jpeg" />
-  </div>
-  <div class="field">
-    <label for="name">name</label>
-    <input type="text" id="name" name="name" />
-  </div>
-  <div class="field">
-    <input type="submit" />
-  </div>
+  <label for="map">map file</label>
+  <input type="file" name="map" id="map" accept="image/*" />
+  <input type="submit" />
 </form>
