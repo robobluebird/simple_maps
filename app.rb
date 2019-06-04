@@ -1,25 +1,29 @@
-require 'sinatra'
-require 'sinatra/base'
-require 'sinatra/json'
-require 'mongoid'
-require 'aws-sdk-s3'
-require 'json'
+require "sinatra"
+require "sinatra/base"
+require "sinatra/json"
+require "mongoid"
+require "aws-sdk-s3"
+require "json"
 
-Mongoid.load! './mongoid.yml'
+Mongoid.load! "./mongoid.yml"
 
 class Location
-end
+  include Mongoid::Document
+  include Mongoid::Timestamps
 
-class SubLocation
+  embeds_many :maps
+
+  field :name, type: String
+  field :key, type: String
 end
 
 class Map
   include Mongoid::Document
   include Mongoid::Timestamps
 
+  embedded_in :location
   embeds_many :pins
 
-  field :name, type: String
   field :key, type: String
 end
 
@@ -49,56 +53,85 @@ end
 
 class App < Sinatra::Base
   def bucket
-    @bucket ||= Aws::S3::Resource.new(region: 'us-east-2').bucket('smistore')
+    @bucket ||= Aws::S3::Resource.new(region: "us-east-2").bucket("smistore")
   end
 
-  get '/' do
-    redirect "/maps"
+  get "/" do
+    redirect "/locations"
+  end
+  
+  # list 'em
+  
+  get "/locations" do
+    @locations = Location.all
+    erb :"locations/index"
+  end
+  
+  get "/locations/:location_id/maps" do
+    @location = Location.find params[:location_id]
+    erb :"maps/index"
+  end
+  
+  # new 'em up
+  
+  get "/locations/new" do
+    @location = Location.new
+    erb :"locations/new"
   end
 
-  get '/maps/new' do
-    erb :'maps/new'
+  get "/locations/:location_id/maps/new" do
+    @location = Location.find params[:location_id]
+    erb :"maps/new"
+  end
+  
+  # show 'em
+  
+  get "/locations/:location_id" do
+    @location = Location.find params[:location_id]
+    erb :"locations/show"
   end
 
-  get '/maps/:map_id' do
-    @map = Map.find params[:map_id]
+  get "/locations/:location_id/maps/:map_id" do
+    @location = Location.find params[:location_id]
+    @map = @location.maps.find params[:map_id]
     
     if request.accept? "text/html"
       signer = Aws::S3::Presigner.new
       @url = signer.presigned_url :get_object, bucket: "smistore", key: @map.key
       scheme = request.scheme == "http" ? "ws" : "wss"
       @ws_url = "#{scheme}://#{request.host}:#{request.port}"
-      erb :'maps/show'
+      erb :"maps/show"
     else
-      json map: @map
+      json location: @location
     end
   end
-
-  get '/maps' do
-    @maps = Map.all
-    erb :'maps/index'
+  
+  # create 'em
+  
+  post "/locations" do
+    location = Location.create params[:name]
+    redirect "/locations/#{location.id}"
   end
 
-  post '/maps' do
+  post "/locations/:location_id/maps" do
+    location = Location.find params[:location_id]
     filename = params[:map][:filename]
     file = params[:map][:tempfile]
-
     obj = bucket.object "#{filename}"
 
     # don't overwrite dups
 
     if obj.upload_file file
-      @map = Map.create(name: params[:name], key: obj.key, pins: [])
-
-      redirect "/maps/#{@map.id}"
+      map = location.maps.create name: params[:name], key: obj.key
+      redirect "/locations/#{location.id}/maps/#{map.id}"
     else
-      @status = 500
-      @error = 'there was a problem uploading the file'
+      redirect "/error?upload_error"
     end
   end
 
-  post '/maps/:map_id/pins' do
-    map = Map.find params[:map_id]
+  post "/locations/:location_id/maps/:map_id/pins" do
+    location = Location.find params[:location_id]
+    map = location.maps.find params[:map_id]
 
     pin = begin
             map.pins.find_by key: params[:key]
@@ -112,6 +145,6 @@ class App < Sinatra::Base
       pin.bits.create name: params[:comment_name], key: params[:comment_key], comment: params[:comment]
     end
 
-    json map: map, pin: pin
+    json location: location
   end
 end
