@@ -23,51 +23,6 @@ html, body {
   resize: none;
 }
 
-.box {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: stretch;
-  width: 100%;
-  height: 100%;
-}
-
-.box.wide {
-  flex-direction: row;
-}
-
-.box.tall {
-  flex-direction: column;
-}
-
-.imgs {
-  flex: 1;
-  position: relative;
-  overflow: scroll;
-}
-
-.msgs {
-  overflow: scroll;
-  flex: 1;
-  background-color: white;
-  border: 2px solid black;
-}
-
-.msgs.hidden {
-  display: none;
-}
-
-.msgs.wide {
-  min-width: 25%;
-  max-width: 25%;
-  max-height: auto;
-}
-
-.msgs.tall {
-  min-height: 50%;
-  max-height: 50%;
-  max-width: auto;
-}
-
 img {
   cursor: pointer;
 }
