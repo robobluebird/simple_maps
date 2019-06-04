@@ -122,7 +122,7 @@ class App < Sinatra::Base
     # don't overwrite dups
 
     if obj.upload_file file
-      map = location.maps.create name: params[:name], key: obj.key
+      map = location.maps.create key: obj.key
       redirect "/locations/#{location.id}/maps/#{map.id}"
     else
       redirect "/error?upload_error"
