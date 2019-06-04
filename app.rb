@@ -109,7 +109,7 @@ class App < Sinatra::Base
   # create 'em
   
   post "/locations" do
-    location = Location.create params[:name]
+    location = Location.create name: params[:name]
     redirect "/locations/#{location.id}"
   end
 
