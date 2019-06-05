@@ -151,6 +151,6 @@ class App < Sinatra::Base
       pin.bits.create name: params[:comment_name], key: params[:comment_key], comment: params[:comment]
     end
 
-    json location: location
+    json location: location, map: map
   end
 end
