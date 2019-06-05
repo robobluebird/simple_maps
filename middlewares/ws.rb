@@ -33,9 +33,10 @@ class Ws
       ws.on :message do |event|
         data = JSON.parse event.data, symbolize_names: true
 
-        if data[:id]
-          map = Map.find data[:id]
-          data = { map: map }
+        if data[:location_id] && data[:map_id]
+          location = Location.find data[:location_id]
+          map = location.maps.find data[:map_id]
+          data = { location: location, map: map }
           @clients.each { |client| client.send data.to_json }
         end
       end
