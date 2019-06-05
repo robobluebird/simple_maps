@@ -43,6 +43,8 @@
     
     getMap(locationId, mapId, function(fetched) {
       loc = fetched.location;
+      loc.id = loc["_id"]["$oid"];
+      
       map = fetched.map;
       map.id = map["_id"]["$oid"];
 
@@ -115,8 +117,9 @@
 
         if (data.location && data.map) {
           loc = data.location;
+          loc.id = loc["_id"]["$oid"];
           map = data.map;
-          map.id = data["map"]["_id"]["$oid"];
+          map.id = map["_id"]["$oid"];
 
           if (!map.pins) {
             map.pins = [];
@@ -335,7 +338,10 @@
     xhr.onreadystatechange = function() { // Call a function when the state changes.
       if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
         let response = JSON.parse(this.response);
-        loc = response.loc
+        
+        loc = response.location;
+        loc.id = loc["_id"]["$oid"];
+        
         map = response.map;
         map.id = map["_id"]["$oid"];
 
@@ -383,7 +389,7 @@
   }
 
   function share() {
-    socket.send(JSON.stringify({ id: map.id }));
+    socket.send(JSON.stringify({ location_id: loc.id, map_id: map.id }));
   }
 
   function dropPins() {
