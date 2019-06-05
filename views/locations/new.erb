@@ -1,4 +1,4 @@
-<h1>new location</h1>
+<h1>new location<%= @location.name ? " in <b>#{@location.name}</b>" : ""  %></h1>
 <form method="POST" action="/locations">
   <input type="text" name="name" placeholder="name of location" />
   <input type="submit" />

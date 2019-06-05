@@ -84,6 +84,11 @@ class App < Sinatra::Base
     @location = Location.find params[:location_id]
     erb :"maps/new"
   end
+
+  get "/locations/:location_id/locations/new" do
+    @location = Location.find params[:location_id]
+    erb :"locations/new"
+  end
   
   # show 'em
   
@@ -103,7 +108,7 @@ class App < Sinatra::Base
       @ws_url = "#{scheme}://#{request.host}:#{request.port}"
       erb :"maps/show"
     else
-      json location: @location
+      json location: @location, map: @map
     end
   end
   
