@@ -75,12 +75,12 @@ img {
 
 img.wide {
   width: 100%;
-  height: inherit;
+  height: auto;
 }
 
 img.tall {
   height: 100%;
-  width: inherit;
+  width: auto;
 }
 
 input.name-input {
