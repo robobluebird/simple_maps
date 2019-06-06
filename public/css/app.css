@@ -5,6 +5,10 @@ html, body {
   padding: 0;
 }
 
+body {
+  background-color: #FAFBFC;
+}
+
 .bit-name {
   font-style: italic;
 }
@@ -42,7 +46,6 @@ html, body {
 }
 
 .imgs {
-  flex: 1;
   position: relative;
   overflow: scroll;
 }
@@ -58,15 +61,9 @@ html, body {
 }
 
 .msgs.wide {
-  min-width: 25%;
-  max-width: 25%;
-  max-height: auto;
 }
 
 .msgs.tall {
-  min-height: 25%;
-  max-height: 25%;
-  max-width: auto;
 }
 
 img {
