@@ -122,7 +122,14 @@
           dropPins();
         }
       });
-    
+      
+      let imgPos = img.getBoundingClientRect();
+      if (imgPos.width > imgPos.height) {
+        wider = true;
+      } else {
+        wider = false;
+      }
+      
       window.onresize = fit;
       fit();
     });
@@ -142,13 +149,12 @@
     }
     
     let imgsPos = imgs.getBoundingClientRect();
-    let imgPos = img.getBoundingClientRect();
     
     if (imgsPos.width > imgsPos.height) {
       img.classList.remove("tall");
       img.classList.add("wide");
     } else {
-      if (imgPos.width > imgPos.height) {
+      if (wider) {
         img.classList.remove("wide");
         img.classList.add("tall");
       } else {
