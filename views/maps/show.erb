@@ -64,18 +64,6 @@
       msgs = box.querySelector(".msgs");
       bits = msgs.querySelector(".bits");
       bin = msgs.querySelector("#bit-input");
-      
-      let imgPos = img.getBoundingClientRect();
-      
-      if (imgPos.width > imgPos.height) {
-        wider = true;
-      } else {
-        wider = false;
-      }
-    
-      fit();
-    
-      window.onresize = fit;
 
       img.addEventListener('click', (event) => {
         let maps = JSON.parse(localStorage.getItem('simpleMaps'));
@@ -134,7 +122,9 @@
           dropPins();
         }
       });
-
+    
+      window.onresize = fit;
+      fit();
       dropPins();
     });
   };
@@ -153,12 +143,13 @@
     }
     
     let imgsPos = imgs.getBoundingClientRect();
+    let imgPos = img.getBoundingClientRect();
     
     if (imgsPos.width > imgsPos.height) {
       img.classList.remove("tall");
       img.classList.add("wide");
     } else {
-      if (wider) {
+      if (imgPos.width > imgPos.height) {
         img.classList.remove("wide");
         img.classList.add("tall");
       } else {
