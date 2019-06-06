@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="imgs">
-    <img id="img" src="<%= @url %>"></img>
+    <img class="wide" id="img" src="<%= @url %>"></img>
   </div>
 </div>
 
@@ -123,13 +123,6 @@
         }
       });
       
-      let imgPos = img.getBoundingClientRect();
-      if (imgPos.width > imgPos.height) {
-        wider = true;
-      } else {
-        wider = false;
-      }
-      
       window.onresize = fit;
       fit();
     });
@@ -146,21 +139,6 @@
       box.classList.add("tall");
       msgs.classList.remove("wide");
       msgs.classList.add("tall");
-    }
-    
-    let imgsPos = imgs.getBoundingClientRect();
-    
-    if (imgsPos.width > imgsPos.height) {
-      img.classList.remove("tall");
-      img.classList.add("wide");
-    } else {
-      if (wider) {
-        img.classList.remove("wide");
-        img.classList.add("tall");
-      } else {
-        img.classList.remove("tall");
-        img.classList.add("wide");
-      }
     }
 
     dropPins();
