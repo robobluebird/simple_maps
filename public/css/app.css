@@ -74,13 +74,13 @@ img {
 }
 
 img.wide {
-  width: fit-content;
-  height: auto;
+  width: 100%;
+  height: inherit;
 }
 
 img.tall {
-  height: fit-content;
-  width: auto;
+  height: 100%;
+  width: inherit;
 }
 
 input.name-input {
