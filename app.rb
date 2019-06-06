@@ -12,8 +12,9 @@ class Location
   include Mongoid::Timestamps
 
   embeds_many :maps
-  recursively_embeds_many
-
+  
+  field :super_locations, type: Set
+  field :sub_locations, type: Set
   field :name, type: String
   field :key, type: String
 end
