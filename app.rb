@@ -12,7 +12,7 @@ class Location
   include Mongoid::Timestamps
 
   embeds_many :maps
-  belongs_to :pin, optional: true
+  embedded_in :pin, optional: true
 
   field :name, type: String
   field :key, type: String
@@ -34,7 +34,7 @@ class Pin
 
   embedded_in :map
   embeds_many :bits
-  has_one :location
+  embeds_one :location
 
   field :x, type: Float
   field :y, type: Float
