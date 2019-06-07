@@ -5,6 +5,14 @@ html, body {
   padding: 0;
 }
 
+ol, ul {
+  padding-left: 40px;
+}
+
+.pad {
+  padding: 10px;
+}
+
 body {
   background-color: #FAFBFC;
 }

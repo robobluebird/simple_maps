@@ -1,11 +1,15 @@
 <h1>locations</h1>
-<a href="/locations/new">new location</a>
-<ul>
-  <% @locations.each do |location| %>
-    <li>
-      <a href="/locations/<%= location.id %>">
-        <%= location.name %>
-      </a>
-    </li>
-  <% end %>
-</ul>
+<div class="pad">
+  <a href="/locations/new">new location</a>
+</div>
+<div class="pad">
+  <ul>
+    <% @locations.each do |location| %>
+      <li>
+        <a href="/locations/<%= location.id %>">
+          <%= location.name %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</div>

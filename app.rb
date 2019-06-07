@@ -12,11 +12,22 @@ class Location
   include Mongoid::Timestamps
 
   embeds_many :maps
-  
-  field :super_locations, type: Set
-  field :sub_locations, type: Set
+  embeds_many :location_links, class_name: "LocationLink", inverse_of: :location
+  has_many :linked_locations, class_name: "LocationLink", inverse_of: :linked
+
   field :name, type: String
   field :key, type: String
+end
+
+class LocationLink
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  embedded_in :location
+  belongs_to :linked
+
+  field :description, type: String
+  field :strength, type: Integer
 end
 
 class Map

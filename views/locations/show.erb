@@ -1,17 +1,35 @@
 <h1><%= @location.name %></h1>
-<a href="/locations/<%= @location.id %>/locations/new">new sub-location</a>
-<a href="/locations/<%= @location.id %>/maps/new">new map</a>
-<p>
-  <% @location.sub_locations.each do |sl| %>
+<div>
+  <a href="/locations/<%= @location.id %>/locations/new">new sub-location</a>
+</div>
+<div>
+  <a href="/locations/<%= @location.id %>/maps/new">new map</a>
+</div>
+<div class="pad">
+  <h2>maps</h2>
+  <ol>
+    <% @location.maps.each do |map| %>
+      <li>
+        <a href="/locations/<%= @location.id %>/maps/<%= map.id %>">
+          <%= map.key %>
+        </a>
+      </li>
+    <% end %>
+  </ol>
+</div>
+<div class="pad">
+  <h2>super locations</h2>
+  <% @location.super_locations.each do |sl| %>
     <a href="/locations/<%= sl.id %>">
-      <%= sl.name %>
+      <a href="/locations/<%= sl.location_id %>"><%= sl.name %></a>
     </a>
   <% end %>
-</p>
-<p>
-  <% @location.maps.each do |map| %>
-     <a href="/locations/<%= @location.id %>/maps/<%= map.id %>">
-       <%= map.key %>
-     </a>
+</div>
+<div class="pad">
+  <h2>sub locations</h2>
+  <% @location.sub_locations.each do |sl| %>
+    <a href="/locations/<%= sl.id %>">
+      <a href="/locations/<%= sl.location_id %>"><%= sl.name %></a>
+    </a>
   <% end %>
-</p>
+</div>
