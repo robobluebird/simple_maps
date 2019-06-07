@@ -61,9 +61,13 @@ body {
 }
 
 .msgs.wide {
+  min-width: 25%;
+  max-width: 25%;
 }
 
 .msgs.tall {
+  min-width: 100%;
+  max-width: 100%;
 }
 
 img {
