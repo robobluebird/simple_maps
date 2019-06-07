@@ -12,22 +12,10 @@ class Location
   include Mongoid::Timestamps
 
   embeds_many :maps
-  embeds_many :location_links, class_name: "LocationLink", inverse_of: :location
-  has_many :linked_locations, class_name: "LocationLink", inverse_of: :linked
+  belongs_to :pin, optional: true
 
   field :name, type: String
   field :key, type: String
-end
-
-class LocationLink
-  include Mongoid::Document
-  include Mongoid::Timestamps
-
-  embedded_in :location
-  belongs_to :linked
-
-  field :description, type: String
-  field :strength, type: Integer
 end
 
 class Map
@@ -46,6 +34,7 @@ class Pin
 
   embedded_in :map
   embeds_many :bits
+  has_one :location
 
   field :x, type: Float
   field :y, type: Float
@@ -95,11 +84,6 @@ class App < Sinatra::Base
   get "/locations/:location_id/maps/new" do
     @location = Location.find params[:location_id]
     erb :"maps/new"
-  end
-
-  get "/locations/:location_id/locations/new" do
-    @location = Location.find params[:location_id]
-    erb :"locations/new"
   end
   
   # show 'em
@@ -161,6 +145,11 @@ class App < Sinatra::Base
       pin.update_attributes x: params[:x], y: params[:y]
     elsif params[:comment] && params[:comment_key] && params[:comment_name]
       pin.bits.create name: params[:comment_name], key: params[:comment_key], comment: params[:comment]
+    elsif params[:location_id]
+      linkable_location = Location.find params[:location_id]
+      pin.update_attributes location: linkable_location
+    elsif params[:location]
+      pin.location.create name: params[:location][:name]
     end
 
     json location: location, map: map
