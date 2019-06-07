@@ -17,19 +17,3 @@
     <% end %>
   </ol>
 </div>
-<div class="pad">
-  <h2>super locations</h2>
-  <% @location.super_locations.each do |sl| %>
-    <a href="/locations/<%= sl.id %>">
-      <a href="/locations/<%= sl.location_id %>"><%= sl.name %></a>
-    </a>
-  <% end %>
-</div>
-<div class="pad">
-  <h2>sub locations</h2>
-  <% @location.sub_locations.each do |sl| %>
-    <a href="/locations/<%= sl.id %>">
-      <a href="/locations/<%= sl.location_id %>"><%= sl.name %></a>
-    </a>
-  <% end %>
-</div>
