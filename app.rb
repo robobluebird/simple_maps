@@ -12,7 +12,7 @@ class Location
   include Mongoid::Timestamps
 
   embeds_many :maps
-  embedded_in :pin
+  belongs_to :pin, optional: true
 
   field :name, type: String
   field :key, type: String
@@ -34,7 +34,7 @@ class Pin
 
   embedded_in :map
   embeds_many :bits
-  embeds_one :location
+  has_one :location
 
   field :x, type: Float
   field :y, type: Float
@@ -152,6 +152,6 @@ class App < Sinatra::Base
       pin.location.create name: params[:location][:name]
     end
 
-    json location: location, map: map
+    json location: location, map: map, pin: pin
   end
 end
