@@ -8,14 +8,30 @@
   let imgs;
   let bits;
   let wider;
+  let lin;
+  let linker;
   let pinKey = null;
   let pinName = null;
 </script>
 
 <div class="box">
+  <div id="linker" class="hidden">
+    <div>
+      <a id="back-to-msgs" class="pointer" onclick="backToMsgs()">back</a>
+    </div>
+    <input
+      type="text"
+      id="location-search"
+      class="sidebar-text-input"
+      placeholder="type to find location" />
+    <div id="locations"></div>
+  </div>
   <div class="msgs hidden">
     <div class="msgs-title"></div>
-    <textarea rows="1" class="bit-input" id="bit-input"></textarea>
+    <a id="link" class="pointer" data-link="">
+      link a location
+    </a>
+    <textarea rows="1" class="sidebar-text-input" id="bit-input"></textarea>
     <div class="bits">
     </div>
   </div>
@@ -64,6 +80,8 @@
       msgs = box.querySelector(".msgs");
       bits = msgs.querySelector(".bits");
       bin = msgs.querySelector("#bit-input");
+      linker = box.querySelector("#linker");
+      lin = linker.querySelector("#location-search");
 
       img.addEventListener('click', (event) => {
         let maps = JSON.parse(localStorage.getItem('simpleMaps'));
@@ -127,6 +145,60 @@
       fit();
     });
   };
+
+  function backToMsgs() {
+    linker.classList.add("hidden");
+    msgs.classList.remove("hidden");
+  }
+
+  let linkInputTimerId = null;
+
+  function searchForLocation(keyupEvent) {
+    if (linkInputTimerId) {
+      window.clearTimeout(linkInputTimerId);
+      linkInputTimerId = null;
+    }
+
+    linkInputTimerId = window.setTimeout(() => {
+      search(keyupEvent.target.value, replaceSearchResults);
+    }, 1000);
+  }
+
+  function search(term, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/locations?q=" + escape(term));
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest");
+    xhr.onreadystatechange = function() {
+      if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+        callback(JSON.parse(this.response));
+      }
+    }
+    xhr.send();
+  }
+
+  function replaceSearchResults(results) {
+    let searchResults = linker.querySelector("#locations");
+
+    while (searchResults.firstChild) {
+      searchResults.removeChild(searchResults.firstChild);
+    }
+
+    results.forEach((result) => {
+      let resultDiv = document.createElement("div");
+      resultDiv.classList.add("bit", "pointer");
+      resultDiv.appendChild(document.createTextNode(result));
+      searchResults.appendChild(resultDiv);
+    });
+  }
+
+  function startLinking(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    msgs.classList.add("hidden");
+    linker.classList.remove("hidden");
+    lin.addEventListener("keyup", searchForLocation, true);
+  }
   
   function fit() {
     if (window.innerWidth > window.innerHeight) {
@@ -134,11 +206,13 @@
       box.classList.add("wide");
       msgs.classList.remove("tall");
       msgs.classList.add("wide");
+      linker.classList.remove("tall");
+      linker.classList.add("wide");
     } else {
       box.classList.remove("wide");
       box.classList.add("tall");
-      msgs.classList.remove("wide");
-      msgs.classList.add("tall");
+      linker.classList.remove("wide");
+      linker.classList.add("tall");
     }
 
     dropPins();
@@ -267,8 +341,8 @@
 
         let input = pin.querySelector('input');
 
-        let keyup = function(event) {
-          let name = input.value;
+        let keyup = function(keyupEvent) {
+          let name = keyupEvent.target.value;
 
           if (event.code == "Enter") {
             if (name.length > 0) {
@@ -405,6 +479,7 @@
       imgs.appendChild(pin);
       
       pin.addEventListener("click", function(e) {
+        let linkLink = msgs.querySelector("#link");
         let opened = msgs.querySelector("#bit-input_" + item.key);
         let title = msgs.querySelector(".msgs-title");
         
@@ -417,6 +492,7 @@
           pinName = null;
           bin.removeEventListener("keyup", addBit, true);
           bin.id = "bit-input"
+          link.removeEventListener("click", startLinking, true);
           msgs.classList.add("hidden");
           fit();
         } else {
@@ -425,6 +501,7 @@
           pinName = item.name;
           fillBits(item);
           bin.id = "bit-input_" + item.key;
+          link.addEventListener("click", startLinking, true);
           bin.addEventListener("keyup", addBit, true);
           msgs.classList.remove("hidden");
           fit();
@@ -500,8 +577,8 @@
     });
   }
 
-  function addBit(e) {
-    let comment = bin.value;
+  function addBit(keyupEvent) {
+    let comment = keyupEvent.target.value;
     
     if (!pinKey || !pinName || !myKey() || !myName()) {
       console.log("well this is bad");
