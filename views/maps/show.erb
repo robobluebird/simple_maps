@@ -28,6 +28,7 @@
   </div>
   <div class="msgs hidden">
     <div class="msgs-title"></div>
+    <div id="link-info"></div>
     <a id="link" class="pointer" data-link="">
       link a location
     </a>
@@ -149,6 +150,7 @@
   function backToMsgs() {
     linker.classList.add("hidden");
     msgs.classList.remove("hidden");
+    lin.removeEventListener("keyup", searchForLocation, true);
   }
 
   let linkInputTimerId = null;
@@ -171,13 +173,19 @@
     xhr.setRequestHeader("HTTP_X_REQUESTED_WITH", "XMLHttpRequest");
     xhr.onreadystatechange = function() {
       if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-        callback(JSON.parse(this.response));
+        let locations = JSON.parse(this.response);
+        locations.forEach((l) => {
+          l.id = l["_id"]["$oid"];
+        });
+        callback(locations);
       }
     }
     xhr.send();
   }
 
   function replaceSearchResults(results) {
+    console.log(results);
+
     let searchResults = linker.querySelector("#locations");
 
     while (searchResults.firstChild) {
@@ -187,9 +195,30 @@
     results.forEach((result) => {
       let resultDiv = document.createElement("div");
       resultDiv.classList.add("bit", "pointer");
-      resultDiv.appendChild(document.createTextNode(result));
+      resultDiv.appendChild(document.createTextNode(result.name));
+      resultDiv.addEventListener("click", (e) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/locations/" + loc.id + "/maps/" + map.id + "/pins", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() { // Call a function when the state changes.
+          if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            setLinkInfo(result.name, result.id);
+            backToMsgs();
+            while (searchResults.firstChild) {
+              searchResults.removeChild(searchResults.firstChild);
+            }
+            lin.value = "";
+          }
+        }
+        xhr.send("location_id=" + result.id);
+      });
       searchResults.appendChild(resultDiv);
     });
+  }
+
+  function setLinkInfo(name, id) {
+    let linkInfo = msgs.querySelector("#link-info"); 
+    linkInfo.innerHTML = `linked to: <a href="/locations/${id}">${name}</a>`;
   }
 
   function startLinking(e) {
@@ -198,6 +227,7 @@
     msgs.classList.add("hidden");
     linker.classList.remove("hidden");
     lin.addEventListener("keyup", searchForLocation, true);
+    lin.focus();
   }
   
   function fit() {
@@ -496,6 +526,9 @@
           msgs.classList.add("hidden");
           fit();
         } else {
+          // do the stuff to show link info
+          // (loc on pin, etc)
+
           title.appendChild(document.createTextNode("comments for: " + item.name));
           pinKey = item.key;
           pinName = item.name;

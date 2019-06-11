@@ -65,7 +65,13 @@ class App < Sinatra::Base
   # list 'em
   
   get "/locations" do
+    if params[:q]
+      @locations = Location.where name: /#{params[:q]}/
+      halt json @locations.to_a
+    end
+
     @locations = Location.all
+
     erb :"locations/index"
   end
   
@@ -148,8 +154,6 @@ class App < Sinatra::Base
     elsif params[:location_id]
       linkable_location = Location.find params[:location_id]
       pin.update_attributes location: linkable_location
-    elsif params[:location]
-      pin.location.create name: params[:location][:name]
     end
 
     json location: location, map: map, pin: pin
