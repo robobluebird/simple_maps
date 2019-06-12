@@ -111,11 +111,9 @@ class App < Sinatra::Base
 
   get "/locations/:location_id/maps/:map_id" do
     @location = Location.find params[:location_id]
-
-    # eager load pin locations!
-    #
-    #
     @map = @location.maps.find params[:map_id]
+   
+    @map.pins.each { |pin| pin.location }
     
     if request.accept? "text/html"
       signer = Aws::S3::Presigner.new
