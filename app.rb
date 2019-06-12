@@ -5,6 +5,16 @@ require "mongoid"
 require "aws-sdk-s3"
 require "json"
 
+module Mongoid
+ module Document
+   def as_json(options={})
+     attrs = super(options)
+     attrs["id"] = attrs["_id"].to_s
+     attrs
+   end
+ end
+end
+
 Mongoid.load! "./mongoid.yml"
 
 class Location
@@ -101,6 +111,10 @@ class App < Sinatra::Base
 
   get "/locations/:location_id/maps/:map_id" do
     @location = Location.find params[:location_id]
+
+    # eager load pin locations!
+    #
+    #
     @map = @location.maps.find params[:map_id]
     
     if request.accept? "text/html"

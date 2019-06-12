@@ -59,11 +59,9 @@
     let mapId = "<%= @map.id %>";
     
     getMap(locationId, mapId, function(fetched) {
+      console.log(fetched);
       loc = fetched.location;
-      loc.id = loc["_id"]["$oid"];
-      
       map = fetched.map;
-      map.id = map["_id"]["$oid"];
 
       if (!map.pins) {
         map.pins = [];
@@ -124,9 +122,7 @@
 
         if (data.location && data.map) {
           loc = data.location;
-          loc.id = loc["_id"]["$oid"];
           map = data.map;
-          map.id = map["_id"]["$oid"];
 
           if (!map.pins) {
             map.pins = [];
@@ -174,9 +170,6 @@
     xhr.onreadystatechange = function() {
       if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
         let locations = JSON.parse(this.response);
-        locations.forEach((l) => {
-          l.id = l["_id"]["$oid"];
-        });
         callback(locations);
       }
     }
@@ -418,10 +411,7 @@
         let response = JSON.parse(this.response);
         
         loc = response.location;
-        loc.id = loc["_id"]["$oid"];
-        
         map = response.map;
-        map.id = map["_id"]["$oid"];
 
         if (!map.pins) {
           map.pins = [];
@@ -526,10 +516,10 @@
           msgs.classList.add("hidden");
           fit();
         } else {
-          // do the stuff to show link info
-          // (loc on pin, etc)
-
           title.appendChild(document.createTextNode("comments for: " + item.name));
+          if (pin.location) {
+            setLinkInfo(pin.location.name, pin.location.id);
+          }
           pinKey = item.key;
           pinName = item.name;
           fillBits(item);
