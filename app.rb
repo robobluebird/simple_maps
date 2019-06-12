@@ -163,7 +163,7 @@ class App < Sinatra::Base
       pin.update_attributes x: params[:x], y: params[:y]
     elsif params[:comment] && params[:comment_key] && params[:comment_name]
       pin.bits.create name: params[:comment_name], key: params[:comment_key], comment: params[:comment]
-    elsif params[:location_id]
+    elsif params[:linked_location_id]
       linkable_location = Location.find params[:linked_location_id]
       pin.update_attributes location: linkable_location
     end
