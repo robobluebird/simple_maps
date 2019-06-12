@@ -164,9 +164,8 @@ class App < Sinatra::Base
     elsif params[:comment] && params[:comment_key] && params[:comment_name]
       pin.bits.create name: params[:comment_name], key: params[:comment_key], comment: params[:comment]
     elsif params[:location_id]
-      linkable_location = Location.find params[:location_id]
-      linkable_location.pin = pin
-      linkable_location.save
+      linkable_location = Location.find params[:linked_location_id]
+      pin.update_attributes location: linkable_location
     end
 
     json location: location, map: map, pin: pin
