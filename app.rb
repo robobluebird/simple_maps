@@ -113,7 +113,7 @@ class App < Sinatra::Base
     @location = Location.find params[:location_id]
     @map = @location.maps.find params[:map_id]
    
-    @map.pins.each { |pin| pin.location }
+    @map.pins.each { |pin| puts pin.location }
     
     if request.accept? "text/html"
       signer = Aws::S3::Presigner.new
