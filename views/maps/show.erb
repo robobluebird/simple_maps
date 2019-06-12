@@ -177,8 +177,6 @@
   }
 
   function replaceSearchResults(results) {
-    console.log(results);
-
     let searchResults = linker.querySelector("#locations");
 
     while (searchResults.firstChild) {
@@ -203,7 +201,7 @@
             lin.value = "";
           }
         }
-        xhr.send("name=" + name + "&key=" + key + "&linked_location_id=" + result.id);
+        xhr.send("name=" + pinName + "&key=" + pinKey + "&linked_location_id=" + result.id);
       });
       searchResults.appendChild(resultDiv);
     });
