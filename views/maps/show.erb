@@ -515,8 +515,8 @@
           fit();
         } else {
           title.appendChild(document.createTextNode("comments for: " + item.name));
-          if (item.location) {
-            setLinkInfo(item.location.name, item.location.id);
+          if (item.linked_location) {
+            setLinkInfo(item.linked_location.name, item.linked_location.id);
           }
           pinKey = item.key;
           pinName = item.name;

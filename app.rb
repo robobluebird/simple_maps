@@ -22,7 +22,7 @@ class Location
   include Mongoid::Timestamps
 
   embeds_many :maps
-  belongs_to :pin, optional: true
+  belongs_to :linked_pin, class_name: "Pin", inverse_of: :linked_location
 
   field :name, type: String
   field :key, type: String
@@ -44,7 +44,7 @@ class Pin
 
   embedded_in :map
   embeds_many :bits
-  has_one :location
+  has_one :linked_location, class_name: "Location", inverse_of: :linked_pin
 
   field :x, type: Float
   field :y, type: Float
@@ -76,7 +76,7 @@ class App < Sinatra::Base
   
   get "/locations" do
     if params[:q]
-      @locations = Location.where name: /#{params[:q]}/
+      @locations = Location.where name: /#{params[:q]}/i
       halt json @locations.to_a
     end
 
@@ -112,9 +112,7 @@ class App < Sinatra::Base
   get "/locations/:location_id/maps/:map_id" do
     @location = Location.find params[:location_id]
     @map = @location.maps.find params[:map_id]
-   
-    @map.pins.each { |pin| puts pin.location }
-    
+
     if request.accept? "text/html"
       signer = Aws::S3::Presigner.new
       @url = signer.presigned_url :get_object, bucket: "smistore", key: @map.key
@@ -122,7 +120,27 @@ class App < Sinatra::Base
       @ws_url = "#{scheme}://#{request.host}:#{request.port}"
       erb :"maps/show"
     else
-      json location: @location, map: @map
+      map_json = @map.as_json(methods: [:linked_location])
+
+      # remove this
+      if map_json["pins"]
+        map_json["pins"].each do |pin|
+          pin["id"] = pin["_id"].to_s
+
+          if pin["bits"]
+            pin["bits"].each do |bit|
+              bit["id"] = bit["_id"].to_s
+            end
+          end
+
+          if pin["linked_location"]
+            pin["linked_location"]["id"] = pin["linked_location"]["_id"].to_s
+          end
+        end
+      end
+      # ^ remove_this ^
+
+      json location: @location, map: map_json
     end
   end
   
@@ -165,7 +183,7 @@ class App < Sinatra::Base
       pin.bits.create name: params[:comment_name], key: params[:comment_key], comment: params[:comment]
     elsif params[:linked_location_id]
       linkable_location = Location.find params[:linked_location_id]
-      pin.update_attributes location: linkable_location
+      pin.update_attributes linked_location: linkable_location
     end
 
     json location: location, map: map, pin: pin
