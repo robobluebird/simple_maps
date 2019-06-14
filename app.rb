@@ -114,8 +114,7 @@ class App < Sinatra::Base
     @map = @location.maps.find params[:map_id]
 
     if request.accept? "text/html"
-      signer = Aws::S3::Presigner.new
-      @url = signer.presigned_url :get_object, bucket: "smistore", key: @map.key
+      @url = "#{ENV["CLOUDFRONT_BASE_URL"]}/#{@map.key}"
       scheme = request.scheme == "http" ? "ws" : "wss"
       @ws_url = "#{scheme}://#{request.host}:#{request.port}"
       erb :"maps/show"

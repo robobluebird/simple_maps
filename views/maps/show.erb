@@ -29,7 +29,7 @@
   <div class="msgs hidden">
     <div class="msgs-title"></div>
     <div id="link-info"></div>
-    <a id="link" class="pointer" data-link="">
+    <a id="link" class="pointer">
       link a location
     </a>
     <textarea rows="1" class="sidebar-text-input" id="bit-input"></textarea>
@@ -210,6 +210,8 @@
   function setLinkInfo(name, id) {
     let linkInfo = msgs.querySelector("#link-info"); 
     linkInfo.innerHTML = `linked to: <a href="/locations/${id}">${name}</a>`;
+    let linkLink = msgs.querySelector("#link");
+    linkLink.textContent = "link a different location";
   }
 
   function startLinking(e) {
