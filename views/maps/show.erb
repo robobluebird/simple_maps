@@ -12,6 +12,7 @@
   let linker;
   let pinKey = null;
   let pinName = null;
+  let linkedPin;
 </script>
 
 <div class="box">
@@ -37,6 +38,8 @@
     </div>
   </div>
   <div class="imgs">
+    <div id="back-link" class="hidden">
+    </div>
     <img class="wide" id="img" src="<%= @url %>"></img>
   </div>
 </div>
@@ -59,9 +62,11 @@
     let mapId = "<%= @map.id %>";
     
     getMap(locationId, mapId, function(fetched) {
-      console.log(fetched);
       loc = fetched.location;
       map = fetched.map;
+      linkedPin = fetched.linked_pin;
+
+      console.log(linkedPin);
 
       if (!map.pins) {
         map.pins = [];
@@ -138,8 +143,34 @@
         }
       });
       
+      // When the window is resized re-layout the image and pins.
+      // Hasn't yet caused performance issues...
+      // Necessary because the pins are placed with absolute positioning
       window.onresize = fit;
+
+      // layout everything for the first time
       fit();
+      
+      // If the location we loaded is linked to by a pin, construct a link
+      // to that location.
+      if (linkedPin) {
+        let backLink = imgs.querySelector("#back-link");
+        backLink.innerHTML =
+          `<a href="/locations/${linkedPin.map.location.id}/maps/${linkedPin.map.id}?pin=${linkedPin.key}">${linkedPin.map.location.name}</a>`;
+        backLink.classList.remove("hidden");
+      }
+
+      // Check query params. If there is a "pin" key it means we
+      // want to open up the comments box for that pin
+      let params = (new URL(document.location)).searchParams;
+      if (params.has("pin")) {
+        let pinId = `#pin_${params.get("pin")}`;
+        let toClick = imgs.querySelector(pinId);
+
+        if (toClick) {
+          toClick.click();
+        }
+      }
     });
   };
 
@@ -369,7 +400,7 @@
         let keyup = function(keyupEvent) {
           let name = keyupEvent.target.value;
 
-          if (event.code == "Enter") {
+          if (keyupEvent.code == "Enter") {
             if (name.length > 0) {
               sned(key, name, xPercent, yPercent, null, null, null, function(response) {
                 store({ name: name });

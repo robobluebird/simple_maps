@@ -1,19 +1,24 @@
 <h1><%= @location.name %></h1>
 <div>
-  <a href="/locations/<%= @location.id %>/locations/new">new sub-location</a>
-</div>
-<div>
-  <a href="/locations/<%= @location.id %>/maps/new">new map</a>
+  <a style="font-weight: bold" href="/locations/<%= @location.id %>/maps/new">new map</a>
 </div>
 <div class="pad">
-  <h2>maps</h2>
-  <ol>
-    <% @location.maps.each do |map| %>
-      <li>
-        <a href="/locations/<%= @location.id %>/maps/<%= map.id %>">
-          <%= map.key %>
-        </a>
-      </li>
+  <div class="container">
+    <% @location.maps.each_slice(2) do |slice| %>
+      <div class="one-half column">
+        <% if slice[0] %>
+          <a href="/locations/<%= @location.id %>/maps/<%= slice[0].id %>">
+            <img class="u-max-full-width" src="<%= @base_cloudfront_url %>/small/<%= slice[0].key %>" alt="map preview image" />
+          </a>
+        <% end %>
+      </div>
+      <div class="one-half column">
+        <% if slice[1] %>
+          <a href="/locations/<%= @location.id %>/maps/<%= slice[1].id %>">
+            <img class="u-max-full-width" src="<%= @base_cloudfront_url %>/small/<%= slice[1].key %>" alt="map preview image" />
+          </a>
+        <% end %>
+      </div>
     <% end %>
-  </ol>
+  </div>
 </div>

@@ -1,9 +1,10 @@
 require "sinatra"
-require "sinatra/base"
-require "sinatra/json"
-require "mongoid"
 require "aws-sdk-s3"
 require "json"
+require "mini_magick"
+require "mongoid"
+require "sinatra/base"
+require "sinatra/json"
 
 module Mongoid
  module Document
@@ -22,10 +23,10 @@ class Location
   include Mongoid::Timestamps
 
   embeds_many :maps
-  belongs_to :linked_pin, class_name: "Pin", inverse_of: :linked_location
 
   field :name, type: String
   field :key, type: String
+  field :linked_pin, type: Hash
 end
 
 class Map
@@ -44,12 +45,12 @@ class Pin
 
   embedded_in :map
   embeds_many :bits
-  has_one :linked_location, class_name: "Location", inverse_of: :linked_pin
 
   field :x, type: Float
   field :y, type: Float
   field :key, type: String
   field :name, type: String
+  field :linked_location, type: Hash
 end
 
 class Bit
@@ -106,6 +107,7 @@ class App < Sinatra::Base
   
   get "/locations/:location_id" do
     @location = Location.find params[:location_id]
+    @base_cloudfront_url = ENV["CLOUDFRONT_BASE_URL"]
     erb :"locations/show"
   end
 
@@ -114,14 +116,14 @@ class App < Sinatra::Base
     @map = @location.maps.find params[:map_id]
 
     if request.accept? "text/html"
-      @url = "#{ENV["CLOUDFRONT_BASE_URL"]}/#{@map.key}"
+      @url = "#{ENV["CLOUDFRONT_BASE_URL"]}/large/#{@map.key}"
       scheme = request.scheme == "http" ? "ws" : "wss"
       @ws_url = "#{scheme}://#{request.host}:#{request.port}"
       erb :"maps/show"
     else
       map_json = @map.as_json(methods: [:linked_location])
 
-      # remove this
+      # assign "id" method to all embedded collections
       if map_json["pins"]
         map_json["pins"].each do |pin|
           pin["id"] = pin["_id"].to_s
@@ -138,8 +140,8 @@ class App < Sinatra::Base
         end
       end
       # ^ remove_this ^
-
-      json location: @location, map: map_json
+      
+      json location: @location, map: map_json, linked_pin: @location.linked_pin
     end
   end
   
@@ -154,12 +156,19 @@ class App < Sinatra::Base
     location = Location.find params[:location_id]
     filename = params[:map][:filename]
     file = params[:map][:tempfile]
-    obj = bucket.object "#{filename}"
 
-    # don't overwrite dups
+    small_tempfile = Tempfile.new
+    small_file = MiniMagick::Image.open file.path
+    small_file.resize "500x500"
+    small_file.write small_tempfile.path
 
-    if obj.upload_file file
-      map = location.maps.create key: obj.key
+    small_obj = bucket.object "small/#{filename}"
+    large_obj = bucket.object "large/#{filename}"
+
+    if small_obj.upload_file(small_tempfile) && large_obj.upload_file(file)
+      small_tempfile.close
+      small_tempfile.unlink
+      map = location.maps.create key: filename
       redirect "/locations/#{location.id}/maps/#{map.id}"
     else
       redirect "/error?upload_error"
@@ -182,7 +191,25 @@ class App < Sinatra::Base
       pin.bits.create name: params[:comment_name], key: params[:comment_key], comment: params[:comment]
     elsif params[:linked_location_id]
       linkable_location = Location.find params[:linked_location_id]
-      pin.update_attributes linked_location: linkable_location
+
+      linkable_location.linked_pin = {
+        key: pin.key,
+        map: {
+          id: map.id.to_s,
+          location: {
+            name: location.name,
+            id: location.id.to_s,
+          }
+        }
+      }
+
+      pin.linked_location = {
+        id: linkable_location.id.to_s,
+        name: linkable_location.name
+      }
+
+      linkable_location.save
+      pin.save
     end
 
     json location: location, map: map, pin: pin

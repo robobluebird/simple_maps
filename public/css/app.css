@@ -64,6 +64,16 @@ body {
   background-color: white;
 }
 
+#back-link {
+  font-weight: bold;
+  padding: 5px;
+  border: 1px solid black;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: white;
+}
+
 #linker {
   overflow: scroll;
   flex: 1;
