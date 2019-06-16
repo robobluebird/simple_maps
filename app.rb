@@ -133,10 +133,6 @@ class App < Sinatra::Base
               bit["id"] = bit["_id"].to_s
             end
           end
-
-          if pin["linked_location"]
-            pin["linked_location"]["id"] = pin["linked_location"]["_id"].to_s
-          end
         end
       end
       # ^ remove_this ^
