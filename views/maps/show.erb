@@ -223,9 +223,9 @@
       let resultDiv = document.createElement("div");
       resultDiv.classList.add("bit", "pointer");
       resultDiv.appendChild(document.createTextNode(result.name));
-      console.log(result);
-      if (!location.linked_pin) {
-        console.log("hi");
+      if (result.linked_pin) {
+        resultDiv.classList.add("struck");
+      } else {
         resultDiv.addEventListener("click", (e) => {
           var xhr = new XMLHttpRequest();
           xhr.open("POST", "/locations/" + loc.id + "/maps/" + map.id + "/pins", true);
@@ -242,8 +242,6 @@
           }
           xhr.send("name=" + pinName + "&key=" + pinKey + "&linked_location_id=" + result.id);
         });
-      } else {
-        resultDiv.classList.add("struck");
       }
       searchResults.appendChild(resultDiv);
     });
