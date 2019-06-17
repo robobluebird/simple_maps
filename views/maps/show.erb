@@ -8,6 +8,7 @@
   let imgs;
   let bits;
   let wider;
+  let bin;
   let lin;
   let linker;
   let pinKey = null;
@@ -33,7 +34,11 @@
     <a id="link" class="pointer">
       link a location
     </a>
-    <textarea rows="1" class="sidebar-text-input" id="bit-input"></textarea>
+    <textarea
+      rows="1"
+      class="sidebar-text-input"
+      id="bit-input"
+      placeholder="leave a comment (hit Enter to submit it)"></textarea>
     <div class="bits">
     </div>
   </div>
@@ -218,22 +223,28 @@
       let resultDiv = document.createElement("div");
       resultDiv.classList.add("bit", "pointer");
       resultDiv.appendChild(document.createTextNode(result.name));
-      resultDiv.addEventListener("click", (e) => {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "/locations/" + loc.id + "/maps/" + map.id + "/pins", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function() { // Call a function when the state changes.
-          if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-            setLinkInfo(result.name, result.id);
-            backToMsgs();
-            while (searchResults.firstChild) {
-              searchResults.removeChild(searchResults.firstChild);
+      console.log(result);
+      if (!location.linked_pin) {
+        console.log("hi");
+        resultDiv.addEventListener("click", (e) => {
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/locations/" + loc.id + "/maps/" + map.id + "/pins", true);
+          xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+          xhr.onreadystatechange = function() { // Call a function when the state changes.
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+              setLinkInfo(result.name, result.id);
+              backToMsgs();
+              while (searchResults.firstChild) {
+                searchResults.removeChild(searchResults.firstChild);
+              }
+              lin.value = "";
             }
-            lin.value = "";
           }
-        }
-        xhr.send("name=" + pinName + "&key=" + pinKey + "&linked_location_id=" + result.id);
-      });
+          xhr.send("name=" + pinName + "&key=" + pinKey + "&linked_location_id=" + result.id);
+        });
+      } else {
+        resultDiv.classList.add("struck");
+      }
       searchResults.appendChild(resultDiv);
     });
   }

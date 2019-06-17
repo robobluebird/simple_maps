@@ -5,6 +5,10 @@ html, body {
   padding: 0;
 }
 
+.struck {
+  text-decoration: line-through;
+}
+
 ol, ul {
   padding-left: 40px;
 }

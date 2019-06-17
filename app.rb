@@ -70,7 +70,7 @@ class App < Sinatra::Base
   end
 
   get "/" do
-    redirect "/locations"
+    erb :index
   end
   
   # list 'em
