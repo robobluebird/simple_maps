@@ -646,7 +646,7 @@
     let comment = keyupEvent.target.value;
     
     if (!pinKey || !pinName || !myKey() || !myName()) {
-      console.log("well this is bad");
+      alert("You don't yet have a name on this map...try dropping a pin before commenting!");
       return;
     }
 
