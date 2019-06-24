@@ -223,26 +223,22 @@
       let resultDiv = document.createElement("div");
       resultDiv.classList.add("bit", "pointer");
       resultDiv.appendChild(document.createTextNode(result.name));
-      if (result.linked_pin) {
-        resultDiv.classList.add("struck");
-      } else {
-        resultDiv.addEventListener("click", (e) => {
-          var xhr = new XMLHttpRequest();
-          xhr.open("POST", "/locations/" + loc.id + "/maps/" + map.id + "/pins", true);
-          xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-          xhr.onreadystatechange = function() { // Call a function when the state changes.
-            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-              setLinkInfo(result.name, result.id);
-              backToMsgs();
-              while (searchResults.firstChild) {
-                searchResults.removeChild(searchResults.firstChild);
-              }
-              lin.value = "";
+      resultDiv.addEventListener("click", (e) => {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/locations/" + loc.id + "/maps/" + map.id + "/pins", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() { // Call a function when the state changes.
+          if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            setLinkInfo(result.name, result.id);
+            backToMsgs();
+            while (searchResults.firstChild) {
+              searchResults.removeChild(searchResults.firstChild);
             }
+            lin.value = "";
           }
-          xhr.send("name=" + pinName + "&key=" + pinKey + "&linked_location_id=" + result.id);
-        });
-      }
+        }
+        xhr.send("name=" + pinName + "&key=" + pinKey + "&linked_location_id=" + result.id);
+      });
       searchResults.appendChild(resultDiv);
     });
   }
